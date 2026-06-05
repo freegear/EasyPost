@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="180" viewBox="0 0 720 180" role="img" aria-labelledby="title desc">
+  <title id="title">EasyPost</title>
+  <desc id="desc">EasyPost logo with a parcel checkmark icon.</desc>
+  <defs>
+    <linearGradient id="markBlue" x1="22" y1="20" x2="146" y2="150" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#143282"/>
+      <stop offset="1" stop-color="#07195f"/>
+    </linearGradient>
+    <linearGradient id="checkRed" x1="58" y1="116" x2="166" y2="36" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#b6002d"/>
+      <stop offset="1" stop-color="#e0003c"/>
+    </linearGradient>
+  </defs>
+  <rect width="720" height="180" rx="18" fill="none"/>
+  <g transform="translate(10 10)">
+    <path d="M80 4 148 43v76L80 158 12 119V43L80 4Z" fill="none" stroke="url(#markBlue)" stroke-width="18" stroke-linejoin="round"/>
+    <path d="M80 4v54l-45-26" fill="none" stroke="url(#markBlue)" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M38 91 65 118 145 38" fill="none" stroke="url(#checkRed)" stroke-width="24" stroke-linecap="square" stroke-linejoin="miter"/>
+  </g>
+  <g font-family="Arial, Helvetica, sans-serif" font-weight="800">
+    <text x="192" y="112" font-size="76" fill="#0b2478">Easy</text>
+    <text x="372" y="112" font-size="76" fill="#ba0034">POST</text>
+  </g>
+</svg>

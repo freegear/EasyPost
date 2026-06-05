@@ -1,0 +1,107 @@
+{
+  "postCards": [
+    {
+      "id": 1,
+      "active": true
+    },
+    {
+      "id": 2,
+      "active": true
+    },
+    {
+      "id": 3,
+      "active": false
+    },
+    {
+      "id": 4,
+      "active": false
+    },
+    {
+      "id": 5,
+      "active": false
+    },
+    {
+      "id": 6,
+      "active": false
+    },
+    {
+      "id": 7,
+      "active": false
+    },
+    {
+      "id": 8,
+      "active": false
+    },
+    {
+      "id": 9,
+      "active": false
+    },
+    {
+      "id": 10,
+      "active": false
+    },
+    {
+      "id": 11,
+      "active": false
+    },
+    {
+      "id": 12,
+      "active": false
+    }
+  ],
+  "slots": [
+    {
+      "id": 1,
+      "name": "게시 작업 슬롯 #1",
+      "active": true,
+      "naverId": "freegear",
+      "naverPw": "gundam",
+      "cafeUrl": "https://cafe.naver.com/...",
+      "boardName": "Board Name (Allboard)",
+      "postId": 1,
+      "postTitle": "GUNDAM을 만들어 드립니다.",
+      "mode": "순차적",
+      "time": "10:30 AM"
+    },
+    {
+      "id": 2,
+      "name": "게시 작업 슬롯 #2",
+      "active": true,
+      "naverId": "",
+      "naverPw": "",
+      "cafeUrl": "https://cafe.naver.com/...",
+      "boardName": "Board Name (Allboard)",
+      "postId": 2,
+      "postTitle": "GundamMk2",
+      "mode": "순차적",
+      "time": "10:30 AM"
+    },
+    {
+      "id": 3,
+      "name": "게시 작업 슬롯 #3",
+      "active": false,
+      "naverId": "",
+      "naverPw": "",
+      "cafeUrl": "https://cafe.naver.com/...",
+      "boardName": "Board Name (Allboard)",
+      "postId": 1,
+      "postTitle": "GUNDAM을 만들어 드립니다.",
+      "mode": "순차적",
+      "time": "10:30 AM"
+    },
+    {
+      "id": 4,
+      "name": "게시 작업 슬롯 #4",
+      "active": true,
+      "naverId": "",
+      "naverPw": "",
+      "cafeUrl": "https://cafe.naver.com/...",
+      "boardName": "Board Name (Allboard)",
+      "postId": 1,
+      "postTitle": "GUNDAM을 만들어 드립니다.",
+      "mode": "순차적",
+      "time": "10:30 AM"
+    }
+  ],
+  "updatedAt": "2026-06-05T22:02:42.455Z"
+}

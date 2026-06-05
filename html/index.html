@@ -376,7 +376,9 @@
         <button data-cmd="justifyRight">&#8677;</button>
         <span class="toolbar-sep"></span>
         <button id="toolInsertImage">🖼 이미지</button>
+        <input id="editorImageInput" type="file" accept="image/*" style="display:none">
         <button id="toolInsertVideo">▶ 동영상</button>
+        <input id="editorVideoInput" type="file" accept="video/*" style="display:none">
         <button id="toolInsertLink">🔗 링크</button>
         <span class="toolbar-sep"></span>
         <button data-cmd="undo">↩</button>
@@ -388,6 +390,7 @@
       </div>
       <div class="editor-footer">
         <button class="editor-btn-save" id="editorSave">저장</button>
+        <button class="editor-btn-reset" id="editorReset">초기화</button>
         <button class="editor-btn-cancel" id="editorCancel">취소</button>
         <button class="editor-btn-close" id="editorClose">닫기</button>
       </div>
@@ -409,6 +412,18 @@
         </div>
       </div>
       <div class="post-grid" id="postGrid"></div>
+    </div>
+  </div>
+
+  <!-- DialogPopUp -->
+  <div class="dialog-popup" id="dialogPopup" style="display:none">
+    <div class="dialog-popup-inner">
+      <h3 id="dialogTitle">알림</h3>
+      <p id="dialogMessage"></p>
+      <div class="dialog-popup-actions">
+        <button class="dialog-btn-secondary" id="dialogCancel" style="display:none">취소</button>
+        <button class="dialog-btn-primary" id="dialogOk">확인</button>
+      </div>
     </div>
   </div>
 
@@ -440,7 +455,173 @@
         .then(() => { window.location.href = '/'; });
     });
 
+    function showDialogPopup(message, options = {}) {
+      return new Promise(resolve => {
+        const popup = document.getElementById('dialogPopup');
+        const title = document.getElementById('dialogTitle');
+        const msg = document.getElementById('dialogMessage');
+        const ok = document.getElementById('dialogOk');
+        const cancel = document.getElementById('dialogCancel');
+        const confirmMode = options.confirm === true;
+
+        title.textContent = options.title || (confirmMode ? '확인' : '알림');
+        msg.textContent = message;
+        ok.textContent = options.okText || '확인';
+        cancel.textContent = options.cancelText || '취소';
+        cancel.style.display = confirmMode ? '' : 'none';
+        popup.style.display = 'flex';
+
+        function close(result) {
+          popup.style.display = 'none';
+          ok.removeEventListener('click', onOk);
+          cancel.removeEventListener('click', onCancel);
+          popup.removeEventListener('click', onBackdrop);
+          document.removeEventListener('keydown', onKeydown);
+          resolve(result);
+        }
+
+        function onOk() { close(true); }
+        function onCancel() { close(false); }
+        function onBackdrop(e) {
+          if (e.target === popup) close(false);
+        }
+        function onKeydown(e) {
+          if (e.key === 'Escape') close(false);
+        }
+
+        ok.addEventListener('click', onOk);
+        cancel.addEventListener('click', onCancel);
+        popup.addEventListener('click', onBackdrop);
+        document.addEventListener('keydown', onKeydown);
+        ok.focus();
+      });
+    }
+
     // 2. 게시글 편집 모달
+    function syncPostSelectOptions() {
+      const activePosts = Array.from(document.querySelectorAll('.post-card')).map((card, idx) => {
+        const postId = parseInt(card.dataset.cardId || idx + 1, 10);
+        const active = card.querySelector('.post-switch input')?.checked !== false;
+        const title = card.querySelector('.post-title')?.value.trim() || `Post #${postId}`;
+        return { id: postId, title, active };
+      }).filter(post => post.active);
+
+      document.querySelectorAll('.post-select').forEach(sel => {
+        const selectedValue = sel.value;
+        sel.innerHTML = '';
+        if (activePosts.length === 0) {
+          const opt = document.createElement('option');
+          opt.value = '';
+          opt.textContent = '선택된 글이 없습니다.';
+          sel.appendChild(opt);
+          sel.disabled = true;
+          return;
+        }
+        sel.disabled = false;
+        activePosts.forEach(post => {
+          const opt = document.createElement('option');
+          opt.value = post.id;
+          opt.textContent = post.title;
+          sel.appendChild(opt);
+        });
+        if (activePosts.some(post => String(post.id) === selectedValue)) {
+          sel.value = selectedValue;
+        }
+      });
+    }
+
+    function collectSlotConfig() {
+      return {
+        slots: Array.from(document.querySelectorAll('.slot-card')).map((card, idx) => {
+          const accountInputs = card.querySelectorAll('.naver-field input');
+          const cafeFields = card.querySelectorAll('.field-title + .input, .field-title + .input + .input');
+          const postSelect = card.querySelector('.post-select');
+          const mode = card.querySelector('.radio-row input:checked')?.parentElement?.textContent.trim() || '순차적';
+          return {
+            id: idx + 1,
+            name: card.querySelector('.slot-head h3')?.textContent.trim() || `게시 작업 슬롯 #${idx + 1}`,
+            active: card.querySelector('.slot-head .switch input').checked,
+            naverId: accountInputs[0]?.value || '',
+            naverPw: accountInputs[1]?.value || '',
+            cafeUrl: cafeFields[0]?.textContent.trim() || '',
+            boardName: cafeFields[1]?.textContent.trim() || '',
+            postId: parseInt(postSelect?.value || '1', 10),
+            postTitle: postSelect?.selectedOptions[0]?.textContent.trim() || '',
+            mode,
+            time: card.querySelector('.time-select')?.value || ''
+          };
+        })
+      };
+    }
+
+    function applySlotConfig(config) {
+      if (!config || !Array.isArray(config.slots)) return;
+      config.slots.forEach(slot => {
+        const card = document.querySelectorAll('.slot-card')[slot.id - 1];
+        if (!card) return;
+        const activeInput = card.querySelector('.slot-head .switch input');
+        const title = card.querySelector('.slot-head h3');
+        const accountInputs = card.querySelectorAll('.naver-field input');
+        const cafeFields = card.querySelectorAll('.field-title + .input, .field-title + .input + .input');
+        if (title && slot.name) title.textContent = slot.name;
+        activeInput.checked = slot.active !== false;
+        card.classList.toggle('disabled', !activeInput.checked);
+        if (accountInputs[0]) accountInputs[0].value = slot.naverId || '';
+        if (accountInputs[1]) accountInputs[1].value = slot.naverPw || '';
+        if (cafeFields[0] && slot.cafeUrl) cafeFields[0].textContent = slot.cafeUrl;
+        if (cafeFields[1] && slot.boardName) cafeFields[1].textContent = slot.boardName;
+        const postSelect = card.querySelector('.post-select');
+        if (postSelect && slot.postId) postSelect.value = String(slot.postId);
+        card.querySelectorAll('.radio-row label').forEach(label => {
+          const input = label.querySelector('input');
+          if (input) input.checked = label.textContent.trim() === slot.mode;
+        });
+        const timeSelect = card.querySelector('.time-select');
+        if (timeSelect && slot.time) timeSelect.value = slot.time;
+      });
+    }
+
+    function applyPostData(data) {
+      if (!data || !Array.isArray(data.posts)) return;
+      data.posts.forEach(post => {
+        if (!post.exists) return;
+        const card = document.querySelector(`.post-card[data-card-id="${post.id}"]`);
+        if (!card) return;
+        const titleInput = card.querySelector('.post-title');
+        const summaryPreview = card.querySelector('.post-summary');
+        titleInput.removeAttribute('readonly');
+        titleInput.value = post.title || '';
+        titleInput.setAttribute('readonly', true);
+        summaryPreview.innerHTML = post.content || '';
+      });
+      syncPostSelectOptions();
+    }
+
+    function normalizeCafeUrl(url) {
+      const value = String(url || '').trim();
+      if (!value || value.includes('...')) return '';
+      return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+    }
+
+    document.querySelectorAll('.slot-card').forEach(card => {
+      const cafeTitle = Array.from(card.querySelectorAll('.field-title'))
+        .find(title => title.textContent.includes('카페 정보'));
+      if (!cafeTitle || cafeTitle.querySelector('.cafe-link-btn')) return;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'cafe-link-btn';
+      btn.textContent = '바로가기';
+      btn.addEventListener('click', () => {
+        const cafeUrl = normalizeCafeUrl(card.querySelector('.input.info')?.textContent);
+        if (!cafeUrl) {
+          showDialogPopup('이동할 카페 URL이 없습니다.', { title: '바로가기' });
+          return;
+        }
+        window.open(cafeUrl, '_blank', 'noopener');
+      });
+      cafeTitle.appendChild(btn);
+    });
+
     (function() {
       const grid = document.getElementById('postGrid');
       const postModal = document.getElementById('postModal');
@@ -452,7 +633,7 @@
 
       function collectPostConfig() {
         return {
-          cards: Array.from(grid.querySelectorAll('.post-card')).map((card, idx) => ({
+          postCards: Array.from(grid.querySelectorAll('.post-card')).map((card, idx) => ({
             id: idx + 1,
             active: card.querySelector('.post-switch input').checked
           }))
@@ -460,38 +641,43 @@
       }
 
       function applyPostConfig(config) {
-        if (!config || !Array.isArray(config.cards)) return;
-        config.cards.forEach(item => {
+        const cards = config && (config.postCards || config.cards);
+        if (!Array.isArray(cards)) return;
+        cards.forEach(item => {
           const card = grid.querySelector(`.post-card[data-card-id="${item.id}"]`);
           if (!card) return;
           const checkbox = card.querySelector('.post-switch input');
           checkbox.checked = item.active !== false;
           card.classList.toggle('post-card-disabled', !checkbox.checked);
         });
+        syncPostSelectOptions();
       }
 
       for (let i = 1; i <= 12; i++) {
         const card = document.createElement('div');
-        card.className = 'post-card';
+        card.className = 'post-card post-card-disabled';
         card.dataset.cardId = i;
         card.innerHTML = `
           <div class="card-overlay" title="더블클릭하여 편집"></div>
           <div class="post-card-head">
             <input class="post-title" type="text" placeholder="제목 #${i}" readonly>
-            <label class="switch post-switch"><input type="checkbox" checked><span></span></label>
+            <label class="switch post-switch"><input type="checkbox"><span></span></label>
           </div>
-          <textarea class="post-summary" placeholder="내용 요약 #${i}" readonly></textarea>
+          <div class="post-summary" data-placeholder="내용 요약 #${i}"></div>
         `;
-        card.querySelector('.card-overlay').addEventListener('dblclick', function(e) {
+        card.addEventListener('dblclick', function(e) {
+          if (e.target.closest('.post-switch')) return;
           e.preventDefault();
           if (window.openEditor) window.openEditor(card);
         });
         grid.appendChild(card);
       }
+      syncPostSelectOptions();
 
       document.querySelectorAll('.post-switch input').forEach(cb => {
         cb.addEventListener('change', function() {
           this.closest('.post-card').classList.toggle('post-card-disabled', !this.checked);
+          syncPostSelectOptions();
         });
       });
 
@@ -504,7 +690,13 @@
         if (e.target === this) closePostModal();
       });
       document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && postModal.style.display !== 'none') closePostModal();
+        if (e.key !== 'Escape' || postModal.style.display === 'none') return;
+        const editorModal = document.getElementById('editorModal');
+        if (editorModal && editorModal.style.display !== 'none') {
+          editorModal.style.display = 'none';
+          return;
+        }
+        closePostModal();
       });
 
       saveModalBtn.addEventListener('click', async function() {
@@ -538,16 +730,39 @@
         .then(r => r.ok ? r.json() : null)
         .then(applyPostConfig)
         .catch(() => {});
+
+      fetch('/api/posts')
+        .then(r => r.ok ? r.json() : null)
+        .then(applyPostData)
+        .catch(() => {});
     })();
 
     // 3. 설정 저장 버튼
-    document.getElementById('saveBtn').addEventListener('click', function() {
-      this.textContent = '저장 완료 ✓';
-      this.classList.add('saved');
-      setTimeout(() => {
-        this.textContent = '설정 저장';
-        this.classList.remove('saved');
-      }, 2000);
+    document.getElementById('saveBtn').addEventListener('click', async function() {
+      const originalText = this.textContent;
+      this.disabled = true;
+      this.textContent = '저장 중...';
+      try {
+        const response = await fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(collectSlotConfig())
+        });
+        if (!response.ok) throw new Error('설정 저장 실패');
+        this.textContent = '저장 완료 ✓';
+        this.classList.add('saved');
+        setTimeout(() => {
+          this.textContent = originalText;
+          this.classList.remove('saved');
+          this.disabled = false;
+        }, 1600);
+      } catch (err) {
+        this.textContent = '저장 실패';
+        setTimeout(() => {
+          this.textContent = originalText;
+          this.disabled = false;
+        }, 2000);
+      }
     });
 
     // 4. 비밀번호 눈 아이콘 토글
@@ -574,6 +789,16 @@
       }
       sel.selectedIndex = 21; // 기본값 10:30 AM
     });
+
+    syncPostSelectOptions();
+
+    fetch('/api/config')
+      .then(r => r.ok ? r.json() : null)
+      .then(config => {
+        applySlotConfig(config);
+        syncPostSelectOptions();
+      })
+      .catch(() => {});
 
     // 6. 달력 컨트롤
     const today = new Date();
@@ -628,9 +853,11 @@
     renderCalendar();
 
     // 6. 슬롯 활성화/비활성화 토글
-    document.querySelectorAll('.switch input[type=checkbox]').forEach(cb => {
+    document.querySelectorAll('.slot-card .switch input[type=checkbox]').forEach(cb => {
       function applyState() {
-        cb.closest('.slot-card').classList.toggle('disabled', !cb.checked);
+        const slotCard = cb.closest('.slot-card');
+        if (!slotCard) return;
+        slotCard.classList.toggle('disabled', !cb.checked);
       }
       cb.addEventListener('change', applyState);
       applyState();
@@ -686,7 +913,7 @@
       function openEditor(card) {
         currentCard = card;
         savedTitle = card.querySelector('.post-title').value;
-        savedContent = card.querySelector('.post-summary').value;
+        savedContent = card.querySelector('.post-summary').innerHTML;
         document.getElementById('editorTitleInput').value = savedTitle;
         document.getElementById('editorVisual').innerHTML = savedContent;
         showVisualTab();
@@ -705,22 +932,59 @@
       });
 
       document.getElementById('toolInsertImage').addEventListener('click', () => {
-        const url = prompt('이미지 URL을 입력하세요:');
-        if (!url) return;
-        document.getElementById('editorVisual').focus();
-        document.execCommand('insertHTML', false,
-          `<img src="${url}" style="max-width:100%;border-radius:6px;margin:6px 0;">`);
+        document.getElementById('editorImageInput').click();
+      });
+
+      document.getElementById('editorImageInput').addEventListener('change', function() {
+        const file = this.files && this.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.addEventListener('load', () => {
+          document.getElementById('editorVisual').focus();
+          document.execCommand('insertHTML', false,
+            `<img src="${reader.result}" alt="${file.name}" style="max-width:100%;border-radius:6px;margin:6px 0;">`);
+          this.value = '';
+        });
+        reader.readAsDataURL(file);
       });
 
       document.getElementById('toolInsertVideo').addEventListener('click', () => {
-        const url = prompt('YouTube 또는 동영상 URL을 입력하세요:');
-        if (!url) return;
-        const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
-        const html = yt
-          ? `<iframe width="560" height="315" src="https://www.youtube.com/embed/${yt[1]}" frameborder="0" allowfullscreen style="max-width:100%;border-radius:6px;"></iframe>`
-          : `<video src="${url}" controls style="max-width:100%;border-radius:6px;"></video>`;
-        document.getElementById('editorVisual').focus();
-        document.execCommand('insertHTML', false, html);
+        document.getElementById('editorVideoInput').click();
+      });
+
+      document.getElementById('editorVideoInput').addEventListener('change', function() {
+        const file = this.files && this.files[0];
+        if (!file || !currentCard) {
+          this.value = '';
+          return;
+        }
+        const postId = currentCard.dataset.cardId;
+        const originalText = document.getElementById('toolInsertVideo').textContent;
+        document.getElementById('toolInsertVideo').disabled = true;
+        document.getElementById('toolInsertVideo').textContent = '업로드 중...';
+
+        fetch(`/api/posts/${postId}/assets?name=${encodeURIComponent(file.name)}&type=${encodeURIComponent(file.type || 'video/mp4')}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/octet-stream' },
+          body: file
+        })
+          .then(response => {
+            if (!response.ok) throw new Error('동영상 업로드 실패');
+            return response.json();
+          })
+          .then(data => {
+            document.getElementById('editorVisual').focus();
+            document.execCommand('insertHTML', false,
+              `<video src="${data.url}" controls style="max-width:100%;border-radius:6px;margin:6px 0;"></video>`);
+          })
+          .catch(() => {
+            showDialogPopup('동영상 업로드에 실패했습니다.', { title: '업로드 실패' });
+          })
+          .finally(() => {
+            document.getElementById('toolInsertVideo').textContent = originalText;
+            document.getElementById('toolInsertVideo').disabled = false;
+            this.value = '';
+          });
       });
 
       document.getElementById('toolInsertLink').addEventListener('click', () => {
@@ -729,27 +993,102 @@
       });
 
 
-      document.getElementById('editorSave').addEventListener('click', () => {
+      document.getElementById('editorSave').addEventListener('click', async function() {
         if (!currentCard) return;
         const src = document.getElementById('editorSource');
         const content = src.style.display !== 'none'
           ? src.value
           : document.getElementById('editorVisual').innerHTML;
         const titleInput = currentCard.querySelector('.post-title');
-        const summaryArea = currentCard.querySelector('.post-summary');
+        const summaryPreview = currentCard.querySelector('.post-summary');
+        const title = document.getElementById('editorTitleInput').value;
         titleInput.removeAttribute('readonly');
-        summaryArea.removeAttribute('readonly');
-        titleInput.value = document.getElementById('editorTitleInput').value;
-        summaryArea.value = content;
+        titleInput.value = title;
+        summaryPreview.innerHTML = content;
         titleInput.setAttribute('readonly', true);
-        summaryArea.setAttribute('readonly', true);
-        document.getElementById('editorModal').style.display = 'none';
+        syncPostSelectOptions();
+
+        const originalText = this.textContent;
+        this.disabled = true;
+        this.textContent = '저장 중...';
+        try {
+          const response = await fetch(`/api/posts/${currentCard.dataset.cardId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, content })
+          });
+          if (!response.ok) throw new Error('HTML 파일 저장 실패');
+          this.textContent = '저장 완료 ✓';
+          setTimeout(() => {
+            this.textContent = originalText;
+            this.disabled = false;
+          }, 1600);
+        } catch (err) {
+          this.textContent = '저장 실패';
+          setTimeout(() => {
+            this.textContent = originalText;
+            this.disabled = false;
+          }, 2000);
+        }
+      });
+
+      document.getElementById('editorReset').addEventListener('click', async function() {
+        if (!currentCard) return;
+        const confirmed = await showDialogPopup('해당 글의 HTML, 이미지, 동영상을 모두 삭제할까요?', {
+          title: '초기화',
+          confirm: true,
+          okText: '초기화',
+          cancelText: '취소'
+        });
+        if (!confirmed) return;
+
+        const originalText = this.textContent;
+        this.disabled = true;
+        this.textContent = '초기화 중...';
+        try {
+          const response = await fetch(`/api/posts/${currentCard.dataset.cardId}`, { method: 'DELETE' });
+          if (!response.ok) throw new Error('게시글 초기화 실패');
+          const titleInput = currentCard.querySelector('.post-title');
+          const summaryPreview = currentCard.querySelector('.post-summary');
+          titleInput.removeAttribute('readonly');
+          titleInput.value = '';
+          titleInput.setAttribute('readonly', true);
+          summaryPreview.innerHTML = '';
+          document.getElementById('editorTitleInput').value = '';
+          document.getElementById('editorVisual').innerHTML = '';
+          document.getElementById('editorSource').value = '';
+          savedTitle = '';
+          savedContent = '';
+          showVisualTab();
+          syncPostSelectOptions();
+          this.textContent = '초기화 완료 ✓';
+          setTimeout(() => {
+            this.textContent = originalText;
+            this.disabled = false;
+          }, 1600);
+        } catch (err) {
+          this.textContent = '초기화 실패';
+          setTimeout(() => {
+            this.textContent = originalText;
+            this.disabled = false;
+          }, 2000);
+        }
       });
 
       document.getElementById('editorCancel').addEventListener('click', () => {
+        if (currentCard) {
+          const titleInput = currentCard.querySelector('.post-title');
+          const summaryPreview = currentCard.querySelector('.post-summary');
+          titleInput.removeAttribute('readonly');
+          titleInput.value = savedTitle;
+          titleInput.setAttribute('readonly', true);
+          summaryPreview.innerHTML = savedContent;
+          syncPostSelectOptions();
+        }
         document.getElementById('editorTitleInput').value = savedTitle;
         document.getElementById('editorVisual').innerHTML = savedContent;
         showVisualTab();
+        document.getElementById('editorModal').style.display = 'none';
       });
 
       document.getElementById('editorClose').addEventListener('click', () => {

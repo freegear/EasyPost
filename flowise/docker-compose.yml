@@ -14,15 +14,35 @@ services:
       - APIKEY_PATH=/root/.flowise
       - SECRETKEY_PATH=/root/.flowise
       - LOG_PATH=/root/.flowise/logs
+      - STORAGE_TYPE=local
+      - BLOB_STORAGE_PATH=/root/.flowise/storage
       - DATABASE_TYPE=postgres
       - DATABASE_HOST=postgres
       - DATABASE_PORT=5432
       - DATABASE_USER=${DB_USER:-easypost}
       - DATABASE_PASSWORD=${DB_PASSWORD:-easypost123}
       - DATABASE_NAME=flowise
+      - NAVER_LOGIN_AGENT_URL=http://naver-login-agent:3010
     depends_on:
       postgres:
         condition: service_healthy
+      naver-login-agent:
+        condition: service_started
+    networks:
+      - easypost
+
+  naver-login-agent:
+    build:
+      context: ./naver-login-agent
+    container_name: naver_login_agent
+    restart: unless-stopped
+    environment:
+      - PORT=3010
+      - HEADLESS=${NAVER_AGENT_HEADLESS:-true}
+      - SESSION_DIR=/sessions
+      - NAVER_LOGIN_URL=https://nid.naver.com/nidlogin.login
+    volumes:
+      - naver_sessions:/sessions
     networks:
       - easypost
 
@@ -55,3 +75,5 @@ volumes:
     name: flowise_data
   postgres_data:
     name: easypost_postgres_data
+  naver_sessions:
+    name: easypost_naver_sessions
