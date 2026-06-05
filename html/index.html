@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>내 카페 등록 대시보드</title>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">N</div>
+        <h1>내 카페 등록 대시보드</h1>
+      </div>
+      <div class="user-menu-wrapper">
+        <div class="user" id="userMenuBtn">
+          <span>개인 사용자:</span>
+          <div class="avatar"></div>
+          <b id="currentUser">...</b>
+          <span class="caret">&#8964;</span>
+        </div>
+        <div class="user-dropdown" id="userDropdown">
+          <div class="drop-header">
+            <div class="drop-avatar" id="dropAvatar">?</div>
+            <div class="drop-info">
+              <h4 id="dropName">...</h4>
+              <span class="drop-badge">일반 사용자</span>
+            </div>
+          </div>
+          <div class="drop-menu">
+            <div class="drop-item">
+              <span class="drop-icon">&#9881;</span>
+              <span>사용자 정보 편집</span>
+            </div>
+            <div class="drop-item drop-logout" id="logoutBtn">
+              <span class="drop-icon">&#8617;</span>
+              <span>로그아웃</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="main-panel">
+        <div class="save-bar">
+          <button class="edit-posts-btn">게시글 편집</button>
+          <button class="save-btn" id="saveBtn">설정 저장</button>
+        </div>
+
+        <div class="panel-header">
+          <h2>활성 슬롯 (오늘)</h2>
+          <div class="quota-card">
+            <strong>4/4 오늘의 포스팅 [최대 한도 도달]</strong>
+            <progress class="quota-progress" max="4" value="4"></progress>
+          </div>
+        </div>
+
+        <section class="slots">
+
+          <!-- 슬롯 #1 -->
+          <article class="slot-card">
+            <div class="slot-head">
+              <h3>게시 작업 슬롯 #1</h3>
+              <label class="switch"><input type="checkbox" checked><span></span></label>
+            </div>
+            <div class="field-title">네이버 계정</div>
+            <div class="naver-field">
+              <span>NAVER ID</span>
+              <input type="text" placeholder="아이디">
+            </div>
+            <div class="naver-field">
+              <span>NAVER PW</span>
+              <div class="pw-wrapper">
+                <input type="password" placeholder="비밀번호">
+                <button class="pw-toggle" type="button" tabindex="-1">
+                  <svg class="eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="eye-off" style="display:none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="field-title">카페 정보 <i>i</i></div>
+            <div class="input info">https://cafe.naver.com/...</div>
+            <div class="input">Board Name (Allboard)</div>
+            <div class="field-title">콘텐츠 소스</div>
+            <div class="row">
+              <select class="post-select">
+                <option value="1">Post #1</option><option value="2">Post #2</option>
+                <option value="3">Post #3</option><option value="4">Post #4</option>
+                <option value="5">Post #5</option><option value="6">Post #6</option>
+                <option value="7">Post #7</option><option value="8">Post #8</option>
+                <option value="9">Post #9</option><option value="10">Post #10</option>
+              </select>
+            </div>
+            <div class="radio-row">
+              <label><input type="radio" name="mode1" checked> 순차적</label>
+              <label><input type="radio" name="mode1"> 랜덤</label>
+              <label><input type="radio" name="mode1"> 고정</label>
+            </div>
+            <div class="field-title">글쓰기 시각</div>
+            <div class="row start-row">
+              <select class="time-select"></select>
+            </div>
+            <div class="popover" style="display:none">
+              <div class="pop-title">콘텐츠 컬렉션 #A 관리</div>
+              <input data-idx="1" placeholder="입력 #1">
+              <input data-idx="2" placeholder="입력 #2">
+              <input data-idx="3" placeholder="입력 #3">
+              <input data-idx="4" placeholder="입력 #4">
+              <input data-idx="5" placeholder="입력 #5">
+              <input data-idx="6" placeholder="입력 #6">
+              <input data-idx="7" placeholder="입력 #7">
+              <input data-idx="8" placeholder="입력 #8">
+              <input data-idx="9" placeholder="입력 #9">
+              <input data-idx="10" placeholder="입력 #10">
+              <div class="pop-actions">
+                <button>저장</button>
+                <button class="secondary close-pop">닫기</button>
+              </div>
+            </div>
+          </article>
+
+          <!-- 슬롯 #2 -->
+          <article class="slot-card">
+            <div class="slot-head">
+              <h3>게시 작업 슬롯 #2</h3>
+              <label class="switch"><input type="checkbox" checked><span></span></label>
+            </div>
+            <div class="field-title">네이버 계정</div>
+            <div class="naver-field">
+              <span>NAVER ID</span>
+              <input type="text" placeholder="아이디">
+            </div>
+            <div class="naver-field">
+              <span>NAVER PW</span>
+              <div class="pw-wrapper">
+                <input type="password" placeholder="비밀번호">
+                <button class="pw-toggle" type="button" tabindex="-1">
+                  <svg class="eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="eye-off" style="display:none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="field-title">카페 정보 <i>i</i></div>
+            <div class="input info">https://cafe.naver.com/...</div>
+            <div class="input">Board Name (Allboard)</div>
+            <div class="field-title">콘텐츠 소스</div>
+            <div class="row">
+              <select class="post-select">
+                <option value="1">Post #1</option><option value="2">Post #2</option>
+                <option value="3">Post #3</option><option value="4">Post #4</option>
+                <option value="5">Post #5</option><option value="6">Post #6</option>
+                <option value="7">Post #7</option><option value="8">Post #8</option>
+                <option value="9">Post #9</option><option value="10">Post #10</option>
+              </select>
+            </div>
+            <div class="radio-row">
+              <label><input type="radio" name="mode2" checked> 순차적</label>
+              <label><input type="radio" name="mode2"> 랜덤</label>
+              <label><input type="radio" name="mode2"> 고정</label>
+            </div>
+            <div class="field-title">글쓰기 시각</div>
+            <div class="row start-row">
+              <select class="time-select"></select>
+            </div>
+            <div class="popover" style="display:none">
+              <div class="pop-title">콘텐츠 컬렉션 #A 관리</div>
+              <input data-idx="1" placeholder="입력 #1">
+              <input data-idx="2" placeholder="입력 #2">
+              <input data-idx="3" placeholder="입력 #3">
+              <input data-idx="4" placeholder="입력 #4">
+              <input data-idx="5" placeholder="입력 #5">
+              <input data-idx="6" placeholder="입력 #6">
+              <input data-idx="7" placeholder="입력 #7">
+              <input data-idx="8" placeholder="입력 #8">
+              <input data-idx="9" placeholder="입력 #9">
+              <input data-idx="10" placeholder="입력 #10">
+              <div class="pop-actions">
+                <button>저장</button>
+                <button class="secondary close-pop">닫기</button>
+              </div>
+            </div>
+          </article>
+
+          <!-- 슬롯 #3 -->
+          <article class="slot-card">
+            <div class="slot-head">
+              <h3>게시 작업 슬롯 #3</h3>
+              <label class="switch"><input type="checkbox" checked><span></span></label>
+            </div>
+            <div class="field-title">네이버 계정</div>
+            <div class="naver-field">
+              <span>NAVER ID</span>
+              <input type="text" placeholder="아이디">
+            </div>
+            <div class="naver-field">
+              <span>NAVER PW</span>
+              <div class="pw-wrapper">
+                <input type="password" placeholder="비밀번호">
+                <button class="pw-toggle" type="button" tabindex="-1">
+                  <svg class="eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="eye-off" style="display:none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="field-title">카페 정보 <i>i</i></div>
+            <div class="input info">https://cafe.naver.com/...</div>
+            <div class="input">Board Name (Allboard)</div>
+            <div class="field-title">콘텐츠 소스</div>
+            <div class="row">
+              <select class="post-select">
+                <option value="1">Post #1</option><option value="2">Post #2</option>
+                <option value="3">Post #3</option><option value="4">Post #4</option>
+                <option value="5">Post #5</option><option value="6">Post #6</option>
+                <option value="7">Post #7</option><option value="8">Post #8</option>
+                <option value="9">Post #9</option><option value="10">Post #10</option>
+              </select>
+            </div>
+            <div class="radio-row">
+              <label><input type="radio" name="mode3" checked> 순차적</label>
+              <label><input type="radio" name="mode3"> 랜덤</label>
+              <label><input type="radio" name="mode3"> 고정</label>
+            </div>
+            <div class="field-title">글쓰기 시각</div>
+            <div class="row start-row">
+              <select class="time-select"></select>
+            </div>
+            <div class="popover" style="display:none">
+              <div class="pop-title">콘텐츠 컬렉션 #A 관리</div>
+              <input data-idx="1" placeholder="입력 #1">
+              <input data-idx="2" placeholder="입력 #2">
+              <input data-idx="3" placeholder="입력 #3">
+              <input data-idx="4" placeholder="입력 #4">
+              <input data-idx="5" placeholder="입력 #5">
+              <input data-idx="6" placeholder="입력 #6">
+              <input data-idx="7" placeholder="입력 #7">
+              <input data-idx="8" placeholder="입력 #8">
+              <input data-idx="9" placeholder="입력 #9">
+              <input data-idx="10" placeholder="입력 #10">
+              <div class="pop-actions">
+                <button>저장</button>
+                <button class="secondary close-pop">닫기</button>
+              </div>
+            </div>
+          </article>
+
+          <!-- 슬롯 #4 -->
+          <article class="slot-card">
+            <div class="slot-head">
+              <h3>게시 작업 슬롯 #4</h3>
+              <label class="switch"><input type="checkbox" checked><span></span></label>
+            </div>
+            <div class="field-title">네이버 계정</div>
+            <div class="naver-field">
+              <span>NAVER ID</span>
+              <input type="text" placeholder="아이디">
+            </div>
+            <div class="naver-field">
+              <span>NAVER PW</span>
+              <div class="pw-wrapper">
+                <input type="password" placeholder="비밀번호">
+                <button class="pw-toggle" type="button" tabindex="-1">
+                  <svg class="eye-open" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="eye-off" style="display:none" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="field-title">카페 정보 <i>i</i></div>
+            <div class="input info">https://cafe.naver.com/...</div>
+            <div class="input">Board Name (Allboard)</div>
+            <div class="field-title">콘텐츠 소스</div>
+            <div class="row">
+              <select class="post-select">
+                <option value="1">Post #1</option><option value="2">Post #2</option>
+                <option value="3">Post #3</option><option value="4">Post #4</option>
+                <option value="5">Post #5</option><option value="6">Post #6</option>
+                <option value="7">Post #7</option><option value="8">Post #8</option>
+                <option value="9">Post #9</option><option value="10">Post #10</option>
+              </select>
+            </div>
+            <div class="radio-row">
+              <label><input type="radio" name="mode4" checked> 순차적</label>
+              <label><input type="radio" name="mode4"> 랜덤</label>
+              <label><input type="radio" name="mode4"> 고정</label>
+            </div>
+            <div class="field-title">글쓰기 시각</div>
+            <div class="row start-row">
+              <select class="time-select"></select>
+            </div>
+            <div class="popover" style="display:none">
+              <div class="pop-title">콘텐츠 컬렉션 #A 관리</div>
+              <input data-idx="1" placeholder="입력 #1">
+              <input data-idx="2" placeholder="입력 #2">
+              <input data-idx="3" placeholder="입력 #3">
+              <input data-idx="4" placeholder="입력 #4">
+              <input data-idx="5" placeholder="입력 #5">
+              <input data-idx="6" placeholder="입력 #6">
+              <input data-idx="7" placeholder="입력 #7">
+              <input data-idx="8" placeholder="입력 #8">
+              <input data-idx="9" placeholder="입력 #9">
+              <input data-idx="10" placeholder="입력 #10">
+              <div class="pop-actions">
+                <button>저장</button>
+                <button class="secondary close-pop">닫기</button>
+              </div>
+            </div>
+          </article>
+
+        </section>
+
+      </section>
+
+      <aside class="sidebar">
+        <section class="calendar card">
+          <div class="cal-head">
+            <button id="calPrev">‹</button>
+            <b id="calTitle"></b>
+            <button id="calNext">›</button>
+          </div>
+          <div class="week">
+            <span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span><span>Su</span>
+          </div>
+          <div class="days" id="calDays"></div>
+        </section>
+
+        <section class="log card">
+          <h2>최근 게시 로그</h2>
+          <div class="log-item">
+            <b>카페명 / 게시판 / 본문 #1</b>
+            <a>https://cafe.naver.com/... →</a>
+            <span>SUCCESS / 10:52 AM</span>
+          </div>
+          <div class="log-item">
+            <b>카페명 / 게시판 / 본문 #2</b>
+            <a>https://cafe.naver.com/... →</a>
+            <span>SUCCESS / 10:33 AM</span>
+          </div>
+          <div class="log-item">
+            <b>카페명 / 게시판 / 본문 #3</b>
+            <span>SUCCESS / 10:32 AM</span>
+          </div>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <!-- HTML 에디터 모달 -->
+  <div class="editor-modal" id="editorModal" style="display:none">
+    <div class="editor-inner">
+      <div class="editor-header">
+        <div class="editor-title-row">
+          <input class="editor-title-input" id="editorTitleInput" type="text" placeholder="제목">
+          <div class="editor-view-tabs">
+            <button class="view-tab active" id="tabVisual">편집</button>
+            <button class="view-tab" id="tabHtml">HTML</button>
+          </div>
+        </div>
+      </div>
+      <div class="editor-toolbar" id="editorToolbar">
+        <button data-cmd="bold"><b>B</b></button>
+        <button data-cmd="italic"><i>I</i></button>
+        <button data-cmd="underline"><u>U</u></button>
+        <button data-cmd="strikeThrough"><s>S</s></button>
+        <span class="toolbar-sep"></span>
+        <button data-cmd="formatBlock" data-val="h1">H1</button>
+        <button data-cmd="formatBlock" data-val="h2">H2</button>
+        <button data-cmd="formatBlock" data-val="h3">H3</button>
+        <button data-cmd="formatBlock" data-val="p">P</button>
+        <span class="toolbar-sep"></span>
+        <button data-cmd="insertUnorderedList">&#9679; 목록</button>
+        <button data-cmd="insertOrderedList">1. 번호</button>
+        <span class="toolbar-sep"></span>
+        <button data-cmd="justifyLeft">&#8676;</button>
+        <button data-cmd="justifyCenter">&#9632;</button>
+        <button data-cmd="justifyRight">&#8677;</button>
+        <span class="toolbar-sep"></span>
+        <button id="toolInsertImage">🖼 이미지</button>
+        <button id="toolInsertVideo">▶ 동영상</button>
+        <button id="toolInsertLink">🔗 링크</button>
+        <span class="toolbar-sep"></span>
+        <button data-cmd="undo">↩</button>
+        <button data-cmd="redo">↪</button>
+      </div>
+      <div class="editor-body">
+        <div class="editor-visual" id="editorVisual" contenteditable="true"></div>
+        <textarea class="editor-source" id="editorSource" style="display:none"></textarea>
+      </div>
+      <div class="editor-footer">
+        <button class="editor-btn-save" id="editorSave">저장</button>
+        <button class="editor-btn-cancel" id="editorCancel">취소</button>
+        <button class="editor-btn-close" id="editorClose">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 게시글 편집 모달 -->
+  <div class="post-modal" id="postModal" style="display:none">
+    <div class="post-modal-inner">
+      <div class="post-modal-header">
+        <div class="post-modal-title">
+          <h2>게시글 편집</h2>
+          <small>카드를 더블클릭하면 편집할 수 있습니다.</small>
+        </div>
+        <div class="post-modal-actions">
+          <button class="save-modal-btn">설정 저장</button>
+          <button class="goto-main-btn">닫기</button>
+          <button class="modal-close" id="modalClose">✕</button>
+        </div>
+      </div>
+      <div class="post-grid" id="postGrid"></div>
+    </div>
+  </div>
+
+  <script>
+    // 1. 로그인 사용자 ID + 드롭다운 정보 설정
+    fetch('/api/me')
+      .then(r => r.json())
+      .then(d => {
+        document.getElementById('currentUser').textContent = d.username;
+        document.getElementById('dropName').textContent = d.username;
+        const initial = d.username.charAt(0).toUpperCase();
+        document.getElementById('dropAvatar').textContent = initial;
+      })
+      .catch(() => {});
+
+    // 유저 메뉴 드롭다운 토글
+    document.getElementById('userMenuBtn').addEventListener('click', e => {
+      e.stopPropagation();
+      document.getElementById('userDropdown').classList.toggle('open');
+    });
+    document.addEventListener('click', () => {
+      document.getElementById('userDropdown').classList.remove('open');
+    });
+    document.getElementById('userDropdown').addEventListener('click', e => e.stopPropagation());
+
+    // 로그아웃
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      fetch('/logout', { method: 'POST' })
+        .then(() => { window.location.href = '/'; });
+    });
+
+    // 2. 게시글 편집 모달
+    (function() {
+      const grid = document.getElementById('postGrid');
+      const postModal = document.getElementById('postModal');
+      const saveModalBtn = document.querySelector('.save-modal-btn');
+
+      function closePostModal() {
+        postModal.style.display = 'none';
+      }
+
+      function collectPostConfig() {
+        return {
+          cards: Array.from(grid.querySelectorAll('.post-card')).map((card, idx) => ({
+            id: idx + 1,
+            active: card.querySelector('.post-switch input').checked
+          }))
+        };
+      }
+
+      function applyPostConfig(config) {
+        if (!config || !Array.isArray(config.cards)) return;
+        config.cards.forEach(item => {
+          const card = grid.querySelector(`.post-card[data-card-id="${item.id}"]`);
+          if (!card) return;
+          const checkbox = card.querySelector('.post-switch input');
+          checkbox.checked = item.active !== false;
+          card.classList.toggle('post-card-disabled', !checkbox.checked);
+        });
+      }
+
+      for (let i = 1; i <= 12; i++) {
+        const card = document.createElement('div');
+        card.className = 'post-card';
+        card.dataset.cardId = i;
+        card.innerHTML = `
+          <div class="card-overlay" title="더블클릭하여 편집"></div>
+          <div class="post-card-head">
+            <input class="post-title" type="text" placeholder="제목 #${i}" readonly>
+            <label class="switch post-switch"><input type="checkbox" checked><span></span></label>
+          </div>
+          <textarea class="post-summary" placeholder="내용 요약 #${i}" readonly></textarea>
+        `;
+        card.querySelector('.card-overlay').addEventListener('dblclick', function(e) {
+          e.preventDefault();
+          if (window.openEditor) window.openEditor(card);
+        });
+        grid.appendChild(card);
+      }
+
+      document.querySelectorAll('.post-switch input').forEach(cb => {
+        cb.addEventListener('change', function() {
+          this.closest('.post-card').classList.toggle('post-card-disabled', !this.checked);
+        });
+      });
+
+      document.querySelector('.edit-posts-btn').addEventListener('click', () => {
+        postModal.style.display = 'flex';
+      });
+      document.getElementById('modalClose').addEventListener('click', closePostModal);
+      document.querySelector('.goto-main-btn').addEventListener('click', closePostModal);
+      postModal.addEventListener('click', function(e) {
+        if (e.target === this) closePostModal();
+      });
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && postModal.style.display !== 'none') closePostModal();
+      });
+
+      saveModalBtn.addEventListener('click', async function() {
+        const originalText = this.textContent;
+        this.disabled = true;
+        this.textContent = '저장 중...';
+        try {
+          const response = await fetch('/api/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(collectPostConfig())
+          });
+          if (!response.ok) throw new Error('설정 저장 실패');
+          this.textContent = '저장 완료 ✓';
+          this.classList.add('saved');
+          setTimeout(() => {
+            this.textContent = originalText;
+            this.classList.remove('saved');
+            this.disabled = false;
+          }, 1600);
+        } catch (err) {
+          this.textContent = '저장 실패';
+          setTimeout(() => {
+            this.textContent = originalText;
+            this.disabled = false;
+          }, 2000);
+        }
+      });
+
+      fetch('/api/config')
+        .then(r => r.ok ? r.json() : null)
+        .then(applyPostConfig)
+        .catch(() => {});
+    })();
+
+    // 3. 설정 저장 버튼
+    document.getElementById('saveBtn').addEventListener('click', function() {
+      this.textContent = '저장 완료 ✓';
+      this.classList.add('saved');
+      setTimeout(() => {
+        this.textContent = '설정 저장';
+        this.classList.remove('saved');
+      }, 2000);
+    });
+
+    // 4. 비밀번호 눈 아이콘 토글
+    document.querySelectorAll('.pw-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = btn.closest('.pw-wrapper').querySelector('input');
+        const show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        btn.querySelector('.eye-open').style.display = show ? 'none' : '';
+        btn.querySelector('.eye-off').style.display = show ? '' : 'none';
+      });
+    });
+
+    // 5. 시간 선택 (30분 단위)
+    document.querySelectorAll('.time-select').forEach(sel => {
+      for (let h = 0; h < 24; h++) {
+        for (let m of [0, 30]) {
+          const ampm = h < 12 ? 'AM' : 'PM';
+          const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+          const opt = document.createElement('option');
+          opt.textContent = `${h12}:${m === 0 ? '00' : '30'} ${ampm}`;
+          sel.appendChild(opt);
+        }
+      }
+      sel.selectedIndex = 21; // 기본값 10:30 AM
+    });
+
+    // 6. 달력 컨트롤
+    const today = new Date();
+    let calYear = today.getFullYear();
+    let calMonth = today.getMonth();
+    let selYear = null, selMonth = null, selDay = null;
+    const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+
+    function renderCalendar() {
+      document.getElementById('calTitle').textContent = calYear + '년 ' + MONTHS[calMonth];
+      const daysEl = document.getElementById('calDays');
+      daysEl.innerHTML = '';
+      const firstDow = new Date(calYear, calMonth, 1).getDay();
+      const startOffset = (firstDow === 0) ? 6 : firstDow - 1;
+      const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+      const daysInPrev = new Date(calYear, calMonth, 0).getDate();
+
+      for (let i = startOffset - 1; i >= 0; i--) {
+        const s = document.createElement('span');
+        s.className = 'muted'; s.textContent = daysInPrev - i;
+        daysEl.appendChild(s);
+      }
+      for (let d = 1; d <= daysInMonth; d++) {
+        const s = document.createElement('span');
+        s.textContent = d;
+        const isToday = d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
+        const isSelected = d === selDay && calMonth === selMonth && calYear === selYear;
+        if (isSelected) s.className = 'selected';
+        else if (isToday) s.className = 'today';
+        s.addEventListener('click', () => {
+          selYear = calYear; selMonth = calMonth; selDay = d;
+          renderCalendar();
+        });
+        daysEl.appendChild(s);
+      }
+      const total = Math.ceil((startOffset + daysInMonth) / 7) * 7;
+      for (let d = 1; d <= total - startOffset - daysInMonth; d++) {
+        const s = document.createElement('span');
+        s.className = 'muted'; s.textContent = d;
+        daysEl.appendChild(s);
+      }
+    }
+
+    document.getElementById('calPrev').addEventListener('click', () => {
+      if (--calMonth < 0) { calMonth = 11; calYear--; }
+      renderCalendar();
+    });
+    document.getElementById('calNext').addEventListener('click', () => {
+      if (++calMonth > 11) { calMonth = 0; calYear++; }
+      renderCalendar();
+    });
+    renderCalendar();
+
+    // 6. 슬롯 활성화/비활성화 토글
+    document.querySelectorAll('.switch input[type=checkbox]').forEach(cb => {
+      function applyState() {
+        cb.closest('.slot-card').classList.toggle('disabled', !cb.checked);
+      }
+      cb.addEventListener('change', applyState);
+      applyState();
+    });
+
+    // 7. 팝오버 선택 글 하이라이트
+    function highlightSelected(card) {
+      const sel = card.querySelector('.post-select');
+      const idx = parseInt(sel.value);
+      card.querySelectorAll('.popover input[data-idx]').forEach(inp => {
+        inp.classList.toggle('active-post', parseInt(inp.dataset.idx) === idx);
+      });
+    }
+
+    document.querySelectorAll('.post-select').forEach(sel => {
+      sel.addEventListener('change', () => highlightSelected(sel.closest('.slot-card')));
+    });
+
+    document.querySelectorAll('.close-pop').forEach(btn => {
+      btn.addEventListener('click', () => btn.closest('.popover').style.display = 'none');
+    });
+
+    // HTML 에디터
+    (function() {
+      let currentCard = null;
+      let savedContent = '';
+      let savedTitle = '';
+
+      function showVisualTab() {
+        const src = document.getElementById('editorSource');
+        if (src.style.display !== 'none') {
+          document.getElementById('editorVisual').innerHTML = src.value;
+        }
+        document.getElementById('editorVisual').style.display = '';
+        src.style.display = 'none';
+        document.getElementById('tabVisual').classList.add('active');
+        document.getElementById('tabHtml').classList.remove('active');
+        document.getElementById('editorToolbar').style.opacity = '1';
+        document.getElementById('editorToolbar').style.pointerEvents = '';
+      }
+
+      function showHtmlTab() {
+        const visual = document.getElementById('editorVisual');
+        document.getElementById('editorSource').value = visual.innerHTML;
+        visual.style.display = 'none';
+        document.getElementById('editorSource').style.display = '';
+        document.getElementById('tabHtml').classList.add('active');
+        document.getElementById('tabVisual').classList.remove('active');
+        document.getElementById('editorToolbar').style.opacity = '0.3';
+        document.getElementById('editorToolbar').style.pointerEvents = 'none';
+      }
+
+      function openEditor(card) {
+        currentCard = card;
+        savedTitle = card.querySelector('.post-title').value;
+        savedContent = card.querySelector('.post-summary').value;
+        document.getElementById('editorTitleInput').value = savedTitle;
+        document.getElementById('editorVisual').innerHTML = savedContent;
+        showVisualTab();
+        document.getElementById('editorModal').style.display = 'flex';
+      }
+      window.openEditor = openEditor;
+
+      document.getElementById('tabVisual').addEventListener('click', showVisualTab);
+      document.getElementById('tabHtml').addEventListener('click', showHtmlTab);
+
+      document.getElementById('editorToolbar').addEventListener('click', function(e) {
+        const btn = e.target.closest('button[data-cmd]');
+        if (!btn) return;
+        document.getElementById('editorVisual').focus();
+        document.execCommand(btn.dataset.cmd, false, btn.dataset.val || null);
+      });
+
+      document.getElementById('toolInsertImage').addEventListener('click', () => {
+        const url = prompt('이미지 URL을 입력하세요:');
+        if (!url) return;
+        document.getElementById('editorVisual').focus();
+        document.execCommand('insertHTML', false,
+          `<img src="${url}" style="max-width:100%;border-radius:6px;margin:6px 0;">`);
+      });
+
+      document.getElementById('toolInsertVideo').addEventListener('click', () => {
+        const url = prompt('YouTube 또는 동영상 URL을 입력하세요:');
+        if (!url) return;
+        const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+        const html = yt
+          ? `<iframe width="560" height="315" src="https://www.youtube.com/embed/${yt[1]}" frameborder="0" allowfullscreen style="max-width:100%;border-radius:6px;"></iframe>`
+          : `<video src="${url}" controls style="max-width:100%;border-radius:6px;"></video>`;
+        document.getElementById('editorVisual').focus();
+        document.execCommand('insertHTML', false, html);
+      });
+
+      document.getElementById('toolInsertLink').addEventListener('click', () => {
+        const url = prompt('링크 URL을 입력하세요:');
+        if (url) document.execCommand('createLink', false, url);
+      });
+
+
+      document.getElementById('editorSave').addEventListener('click', () => {
+        if (!currentCard) return;
+        const src = document.getElementById('editorSource');
+        const content = src.style.display !== 'none'
+          ? src.value
+          : document.getElementById('editorVisual').innerHTML;
+        const titleInput = currentCard.querySelector('.post-title');
+        const summaryArea = currentCard.querySelector('.post-summary');
+        titleInput.removeAttribute('readonly');
+        summaryArea.removeAttribute('readonly');
+        titleInput.value = document.getElementById('editorTitleInput').value;
+        summaryArea.value = content;
+        titleInput.setAttribute('readonly', true);
+        summaryArea.setAttribute('readonly', true);
+        document.getElementById('editorModal').style.display = 'none';
+      });
+
+      document.getElementById('editorCancel').addEventListener('click', () => {
+        document.getElementById('editorTitleInput').value = savedTitle;
+        document.getElementById('editorVisual').innerHTML = savedContent;
+        showVisualTab();
+      });
+
+      document.getElementById('editorClose').addEventListener('click', () => {
+        document.getElementById('editorModal').style.display = 'none';
+      });
+    })();
+  </script>
+</body>
+</html>

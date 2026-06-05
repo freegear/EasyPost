@@ -1,0 +1,57 @@
+services:
+  flowise:
+    image: flowiseai/flowise:latest
+    container_name: flowise
+    restart: unless-stopped
+    ports:
+      - "3991:3000"
+    volumes:
+      - flowise_data:/root/.flowise
+    environment:
+      - PORT=3000
+      - FLOWISE_USERNAME=${FLOWISE_USERNAME:-freegear}
+      - FLOWISE_PASSWORD=${FLOWISE_PASSWORD:-gundam}
+      - APIKEY_PATH=/root/.flowise
+      - SECRETKEY_PATH=/root/.flowise
+      - LOG_PATH=/root/.flowise/logs
+      - DATABASE_TYPE=postgres
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_USER=${DB_USER:-easypost}
+      - DATABASE_PASSWORD=${DB_PASSWORD:-easypost123}
+      - DATABASE_NAME=flowise
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - easypost
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: easypost_postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${DB_USER:-easypost}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-easypost123}
+      - POSTGRES_DB=flowise
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-easypost}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - easypost
+
+networks:
+  easypost:
+    name: easypost
+    driver: bridge
+
+volumes:
+  flowise_data:
+    name: flowise_data
+  postgres_data:
+    name: easypost_postgres_data

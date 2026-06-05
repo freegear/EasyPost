@@ -1,0 +1,25 @@
+services:
+  login:
+    build: .
+    container_name: easypost_login
+    restart: unless-stopped
+    ports:
+      - "3982:3000"
+    environment:
+      - DB_HOST=easypost_postgres
+      - DB_USER=${DB_USER:-easypost}
+      - DB_PASSWORD=${DB_PASSWORD:-easypost123}
+      - FLOWISE_URL=${FLOWISE_URL:-http://localhost:3991}
+      - SESSION_SECRET=${SESSION_SECRET:-easypost-secret-key}
+      - CONFIG_PATH=/app/config.json
+    volumes:
+      - ../html:/app/html:ro
+      - ../css:/app/css:ro
+      - ../config.json:/app/config.json
+    networks:
+      - easypost
+
+networks:
+  easypost:
+    external: true
+    name: easypost
