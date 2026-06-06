@@ -14,6 +14,26 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE posting_logs (
+    id            BIGSERIAL PRIMARY KEY,
+    user_id       INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    username      VARCHAR(50) NOT NULL,
+    slot_id       INTEGER NOT NULL,
+    slot_name     VARCHAR(255) NOT NULL,
+    post_id       INTEGER,
+    schedule_type VARCHAR(20),
+    scheduled_for TIMESTAMPTZ NOT NULL,
+    status        VARCHAR(20) NOT NULL,
+    reason        TEXT,
+    posted_url    TEXT,
+    detail        JSONB NOT NULL DEFAULT '{}'::jsonb,
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, slot_id, scheduled_for)
+);
+
+CREATE INDEX posting_logs_user_created_idx ON posting_logs (user_id, created_at DESC);
+
 -- 기본 사용자: freegear / gundam
 INSERT INTO users (username, password)
 VALUES ('freegear', crypt('gundam', gen_salt('bf')));

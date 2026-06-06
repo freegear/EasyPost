@@ -20,6 +20,7 @@ body{
   box-shadow:0 2px 16px rgba(0,0,0,.05);
 }
 .brand,.user{display:flex;align-items:center;gap:14px}
+.brand-logo{display:block;width:220px;height:auto}
 .logo{
   width:45px;height:45px;border-radius:10px;
   display:grid;place-items:center;
@@ -168,14 +169,6 @@ progress.quota-progress::-moz-progress-bar{background:#55be6f;border-radius:999p
   transition:left 0.2s;
 }
 .switch input:checked + span:after{left:25px}
-.stages-list{display:flex;flex-direction:column;gap:6px;margin-bottom:4px}
-.stage-row{display:flex!important;flex-direction:row!important;align-items:center;gap:8px;width:100%}
-.stage-row>.stage-switch{display:inline-flex!important;flex:0 0 auto}
-.stage-switch span{width:38px;height:20px}
-.stage-switch span:after{width:16px;height:16px;top:2px;left:2px}
-.stage-switch input:checked + span:after{left:20px}
-.stage-row .stage-name{flex:1;min-width:0;width:auto!important;height:28px;font-size:14px;border:1px solid #bbcabe;border-radius:6px;background:#eef8ef;padding:4px 8px;box-sizing:border-box}
-.stage-row .stage-name:focus{outline:none;border-color:#4c7f62;box-shadow:0 0 0 2px rgba(76,127,98,.15)}
 .field-title{font-size:20px;font-weight:800;margin:10px 0 6px;display:flex;align-items:center;gap:6px}
 .naver-field{display:flex;align-items:center;gap:8px;margin-bottom:5px}
 .naver-field span{font-size:13px;color:#555;min-width:110px;text-align:right;white-space:nowrap;flex-shrink:0}
@@ -218,8 +211,29 @@ button{
 }
 .radio-row{display:flex;gap:14px;margin-top:9px;font-size:16px;flex-wrap:wrap}
 input[type=radio]{accent-color:#4c7f62}
+.schedule-box{
+  padding:10px;border:1px solid #c7d7ca;border-radius:9px;
+  background:rgba(238,248,239,.72)
+}
+.schedule-type{display:flex;gap:8px;margin-bottom:9px}
+.schedule-type label{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:7px;border:1px solid #b8cbbb;border-radius:7px;background:white;
+  font-size:15px;font-weight:700;cursor:pointer
+}
+.schedule-type label:has(input:checked){background:#d5ead9;border-color:#4c7f62;color:#315c44}
+.weekday-row{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:9px}
+.weekday-row[hidden]{display:none}
+.weekday-row label{cursor:pointer}
+.weekday-row input{position:absolute;opacity:0;pointer-events:none}
+.weekday-row span{
+  display:grid;place-items:center;height:31px;border:1px solid #b8cbbb;
+  border-radius:7px;background:white;font-size:14px;font-weight:700;color:#526057
+}
+.weekday-row input:checked + span{background:#4c7f62;border-color:#4c7f62;color:white}
 .start-row{justify-content:flex-start;font-size:17px}
-.start-row select{flex:0 0 116px}
+.start-row select{flex:1}
+.schedule-time-label{font-size:14px;font-weight:700;color:#526057;white-space:nowrap}
 .dot{width:13px;height:13px;background:#6fc779;border-radius:50%;display:inline-block}
 .check{display:block;margin-top:12px;font-size:17px}
 .check input{width:20px;height:20px;vertical-align:middle}
@@ -271,11 +285,17 @@ input[type=radio]{accent-color:#4c7f62}
 .days span:not(.muted):not(.today):not(.selected):hover{background:#d0e8d5;border-radius:4px}
 .days span.selected{background:#5d9271;color:white;border-radius:4px;padding:5px 0;margin-top:-5px}
 .slot-card.disabled{filter:grayscale(1) opacity(0.45)}
-.log{padding:0 18px 16px;min-height:0}
+.log{padding:0 18px 16px;min-height:0;display:flex;flex-direction:column;overflow:hidden}
 .log h2{font-size:25px;margin:0 -18px 12px;padding:11px 18px;background:#fafafa;border-bottom:1px solid #ddd;border-radius:9px 9px 0 0}
+#postingLogs{flex:1;min-height:0;overflow-y:auto;padding-right:5px}
 .log-item{margin:10px 0;font-size:16px}
-.log-item b,.log-item a,.log-item span{display:block}
+.log-item b,.log-item a,.log-item span,.log-item small{display:block}
 .log-item a{color:#34764e;text-decoration:underline}
+.log-item small{margin-top:3px;color:#66736b;font-size:12px;line-height:1.35}
+.log-success span{color:#217a3f;font-weight:700}
+.log-failed span{color:#c0392b;font-weight:700}
+.log-skipped span{color:#8a6d20;font-weight:700}
+.log-empty{padding:8px 0;color:#7d8881;font-size:14px}
 
 /* HTML 에디터 모달 */
 .editor-modal{

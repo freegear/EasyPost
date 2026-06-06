@@ -14,7 +14,7 @@
     },
     {
       "id": 4,
-      "active": false
+      "active": true
     },
     {
       "id": 5,
@@ -62,57 +62,33 @@
       "postId": 3,
       "postTitle": "GTL-지티엘파킹 : 주차관제시스템, 차량출입통제시스템, 차량번호인식시스템, 차번인식기, 무인주차장, 주차요금정산기, 전광판, 차량검지기, LPR, ANPR, 주차차단기, 무료",
       "mode": "순차적",
-      "time": "10:30 AM",
-      "stages": [
-        {
-          "name": "까페 글쓰기 버튼 클릭",
-          "active": false
-        },
-        {
-          "name": "게시판을 선택해 주세요. 를 클릭하여  \"업체 홍보&광고\" 를 선택",
-          "active": false
-        },
-        {
-          "name": "제목은 \"주차 관제 홍보 GTL Parking\"으로 입력",
-          "active": false
-        },
-        {
-          "name": "글은 컨텐츠 소스의 내용을 복사하여 붙임.",
-          "active": false
-        }
-      ]
+      "scheduleType": "daily",
+      "weekdays": [],
+      "time": "6:30 AM"
     },
     {
       "id": 2,
       "name": "게시 작업 슬롯 #2",
       "active": true,
-      "naverId": "",
-      "naverPw": "",
-      "username": "",
-      "cafeUrl": "https://cafe.naver.com/...",
-      "boardName": "Board Name (Allboard)",
-      "postId": 1,
-      "postTitle": "GUNDAM을 만들어 드립니다.",
-      "mode": "순차적",
-      "time": "10:30 AM",
-      "stages": [
-        {
-          "name": "",
-          "active": false
-        },
-        {
-          "name": "",
-          "active": false
-        },
-        {
-          "name": "",
-          "active": false
-        },
-        {
-          "name": "",
-          "active": false
-        }
-      ]
+      "naverId": "jylim3",
+      "naverPw": "Gundam11!!",
+      "username": "freegear",
+      "cafeUrl": "https://cafe.naver.com/f-e/cafes/19276823/menus/52",
+      "boardName": "업체 홍보&광고(1회限)",
+      "postId": 4,
+      "postTitle": "GTL-지티엘파킹 : 주차관제시스템",
+      "mode": "랜덤",
+      "scheduleType": "weekly",
+      "weekdays": [
+        "mon",
+        "tue",
+        "wed",
+        "thu",
+        "fri",
+        "sat",
+        "sun"
+      ],
+      "time": "6:30 AM"
     },
     {
       "id": 3,
@@ -126,30 +102,14 @@
       "postId": 1,
       "postTitle": "GUNDAM을 만들어 드립니다.",
       "mode": "순차적",
-      "time": "10:30 AM",
-      "stages": [
-        {
-          "name": "",
-          "active": false
-        },
-        {
-          "name": "",
-          "active": false
-        },
-        {
-          "name": "",
-          "active": false
-        },
-        {
-          "name": "",
-          "active": false
-        }
-      ]
+      "scheduleType": "daily",
+      "weekdays": [],
+      "time": "10:30 AM"
     },
     {
       "id": 4,
       "name": "게시 작업 슬롯 #4",
-      "active": true,
+      "active": false,
       "naverId": "",
       "naverPw": "",
       "username": "",
@@ -158,26 +118,10 @@
       "postId": 1,
       "postTitle": "GUNDAM을 만들어 드립니다.",
       "mode": "순차적",
-      "time": "10:30 AM",
-      "stages": [
-        {
-          "name": "",
-          "active": false
-        },
-        {
-          "name": "",
-          "active": false
-        },
-        {
-          "name": "",
-          "active": false
-        },
-        {
-          "name": "",
-          "active": false
-        }
-      ]
+      "scheduleType": "daily",
+      "weekdays": [],
+      "time": "10:30 AM"
     }
   ],
-  "updatedAt": "2026-06-06T12:25:24.182Z"
+  "updatedAt": "2026-06-06T21:01:18.446Z"
 }

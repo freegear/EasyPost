@@ -3,15 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>내 카페 등록 대시보드</title>
+  <title>EasyPost</title>
   <link rel="stylesheet" href="/css/style.css?v=2"/>
 </head>
 <body>
   <div class="app">
     <header class="topbar">
       <div class="brand">
-        <div class="logo">N</div>
-        <h1>내 카페 등록 대시보드</h1>
+        <img class="brand-logo" src="/easypost-logo.svg" alt="EasyPost">
       </div>
       <div class="user-menu-wrapper">
         <div class="user" id="userMenuBtn">
@@ -123,15 +122,24 @@
               <label><input type="radio" name="mode1"> 고정</label>
             </div>
             <div class="field-title">글쓰기 시각</div>
-            <div class="row start-row">
-              <select class="time-select"></select>
-            </div>
-            <div class="field-title">단계</div>
-            <div class="stages-list">
-              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 1"></div>
-              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 2"></div>
-              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 3"></div>
-              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 4"></div>
+            <div class="schedule-box">
+              <div class="schedule-type">
+                <label><input type="radio" name="schedule1" value="daily" checked> 매일</label>
+                <label><input type="radio" name="schedule1" value="weekly"> 주간</label>
+              </div>
+              <div class="weekday-row" hidden>
+                <label><input type="checkbox" value="mon"><span>월</span></label>
+                <label><input type="checkbox" value="tue"><span>화</span></label>
+                <label><input type="checkbox" value="wed"><span>수</span></label>
+                <label><input type="checkbox" value="thu"><span>목</span></label>
+                <label><input type="checkbox" value="fri"><span>금</span></label>
+                <label><input type="checkbox" value="sat"><span>토</span></label>
+                <label><input type="checkbox" value="sun"><span>일</span></label>
+              </div>
+              <div class="row start-row">
+                <span class="schedule-time-label">게시 시간</span>
+                <select class="time-select"></select>
+              </div>
             </div>
             <div class="popover" style="display:none">
               <div class="pop-title">콘텐츠 컬렉션 #A 관리</div>
@@ -205,15 +213,24 @@
               <label><input type="radio" name="mode2"> 고정</label>
             </div>
             <div class="field-title">글쓰기 시각</div>
-            <div class="row start-row">
-              <select class="time-select"></select>
-            </div>
-            <div class="field-title">단계</div>
-            <div class="stages-list">
-              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 1"></div>
-              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 2"></div>
-              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 3"></div>
-              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 4"></div>
+            <div class="schedule-box">
+              <div class="schedule-type">
+                <label><input type="radio" name="schedule2" value="daily" checked> 매일</label>
+                <label><input type="radio" name="schedule2" value="weekly"> 주간</label>
+              </div>
+              <div class="weekday-row" hidden>
+                <label><input type="checkbox" value="mon"><span>월</span></label>
+                <label><input type="checkbox" value="tue"><span>화</span></label>
+                <label><input type="checkbox" value="wed"><span>수</span></label>
+                <label><input type="checkbox" value="thu"><span>목</span></label>
+                <label><input type="checkbox" value="fri"><span>금</span></label>
+                <label><input type="checkbox" value="sat"><span>토</span></label>
+                <label><input type="checkbox" value="sun"><span>일</span></label>
+              </div>
+              <div class="row start-row">
+                <span class="schedule-time-label">게시 시간</span>
+                <select class="time-select"></select>
+              </div>
             </div>
             <div class="popover" style="display:none">
               <div class="pop-title">콘텐츠 컬렉션 #A 관리</div>
@@ -287,15 +304,24 @@
               <label><input type="radio" name="mode3"> 고정</label>
             </div>
             <div class="field-title">글쓰기 시각</div>
-            <div class="row start-row">
-              <select class="time-select"></select>
-            </div>
-            <div class="field-title">단계</div>
-            <div class="stages-list">
-              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 1"></div>
-              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 2"></div>
-              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 3"></div>
-              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 4"></div>
+            <div class="schedule-box">
+              <div class="schedule-type">
+                <label><input type="radio" name="schedule3" value="daily" checked> 매일</label>
+                <label><input type="radio" name="schedule3" value="weekly"> 주간</label>
+              </div>
+              <div class="weekday-row" hidden>
+                <label><input type="checkbox" value="mon"><span>월</span></label>
+                <label><input type="checkbox" value="tue"><span>화</span></label>
+                <label><input type="checkbox" value="wed"><span>수</span></label>
+                <label><input type="checkbox" value="thu"><span>목</span></label>
+                <label><input type="checkbox" value="fri"><span>금</span></label>
+                <label><input type="checkbox" value="sat"><span>토</span></label>
+                <label><input type="checkbox" value="sun"><span>일</span></label>
+              </div>
+              <div class="row start-row">
+                <span class="schedule-time-label">게시 시간</span>
+                <select class="time-select"></select>
+              </div>
             </div>
             <div class="popover" style="display:none">
               <div class="pop-title">콘텐츠 컬렉션 #A 관리</div>
@@ -369,15 +395,24 @@
               <label><input type="radio" name="mode4"> 고정</label>
             </div>
             <div class="field-title">글쓰기 시각</div>
-            <div class="row start-row">
-              <select class="time-select"></select>
-            </div>
-            <div class="field-title">단계</div>
-            <div class="stages-list">
-              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 1"></div>
-              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 2"></div>
-              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 3"></div>
-              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 4"></div>
+            <div class="schedule-box">
+              <div class="schedule-type">
+                <label><input type="radio" name="schedule4" value="daily" checked> 매일</label>
+                <label><input type="radio" name="schedule4" value="weekly"> 주간</label>
+              </div>
+              <div class="weekday-row" hidden>
+                <label><input type="checkbox" value="mon"><span>월</span></label>
+                <label><input type="checkbox" value="tue"><span>화</span></label>
+                <label><input type="checkbox" value="wed"><span>수</span></label>
+                <label><input type="checkbox" value="thu"><span>목</span></label>
+                <label><input type="checkbox" value="fri"><span>금</span></label>
+                <label><input type="checkbox" value="sat"><span>토</span></label>
+                <label><input type="checkbox" value="sun"><span>일</span></label>
+              </div>
+              <div class="row start-row">
+                <span class="schedule-time-label">게시 시간</span>
+                <select class="time-select"></select>
+              </div>
             </div>
             <div class="popover" style="display:none">
               <div class="pop-title">콘텐츠 컬렉션 #A 관리</div>
@@ -417,20 +452,7 @@
 
         <section class="log card">
           <h2>최근 게시 로그</h2>
-          <div class="log-item">
-            <b>카페명 / 게시판 / 본문 #1</b>
-            <a>https://cafe.naver.com/... →</a>
-            <span>SUCCESS / 10:52 AM</span>
-          </div>
-          <div class="log-item">
-            <b>카페명 / 게시판 / 본문 #2</b>
-            <a>https://cafe.naver.com/... →</a>
-            <span>SUCCESS / 10:33 AM</span>
-          </div>
-          <div class="log-item">
-            <b>카페명 / 게시판 / 본문 #3</b>
-            <span>SUCCESS / 10:32 AM</span>
-          </div>
+          <div id="postingLogs"><div class="log-empty">게시 로그가 없습니다.</div></div>
         </section>
       </aside>
     </main>
@@ -521,6 +543,31 @@
   </div>
 
   <script>
+    // 세션 만료/API 인증 실패 시 로그인 페이지로 이동
+    (() => {
+      const nativeFetch = window.fetch.bind(window);
+      let redirectingToLogin = false;
+
+      function goToLogin() {
+        if (redirectingToLogin) return;
+        redirectingToLogin = true;
+        window.location.replace('/');
+      }
+
+      window.fetch = async (...args) => {
+        const response = await nativeFetch(...args);
+        const redirectedPath = response.redirected ? new URL(response.url).pathname : '';
+        if (response.status === 401 || redirectedPath === '/') goToLogin();
+        return response;
+      };
+
+      setInterval(() => {
+        if (!document.hidden) {
+          window.fetch('/api/me', { cache: 'no-store' }).catch(() => {});
+        }
+      }, 60 * 1000);
+    })();
+
     // 1. 로그인 사용자 ID + 드롭다운 정보 설정
     fetch('/api/me')
       .then(r => r.json())
@@ -531,6 +578,64 @@
         document.getElementById('dropAvatar').textContent = initial;
       })
       .catch(() => {});
+
+    function escapeLogText(value) {
+      return String(value || '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+      })[char]);
+    }
+
+    function renderPostingLogs(data) {
+      const container = document.getElementById('postingLogs');
+      const logs = Array.isArray(data?.logs)
+        ? data.logs.filter(item => String(item.status || '').toLowerCase() !== 'skipped')
+        : [];
+      if (logs.length === 0) {
+        container.innerHTML = '<div class="log-empty">게시 로그가 없습니다.</div>';
+        return;
+      }
+      container.innerHTML = logs.map(item => {
+        const status = String(item.status || '').toUpperCase();
+        const time = new Date(item.created_at).toLocaleString('ko-KR', {
+          timeZone: 'Asia/Seoul',
+          month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit',
+        });
+        const postedUrl = escapeLogText(item.posted_url);
+        const link = postedUrl
+          ? `<a href="${postedUrl}" target="_blank" rel="noopener">${postedUrl} →</a>`
+          : '';
+        return `<div class="log-item log-${item.status}">
+          <b>${escapeLogText(item.slot_name)} / Post #${item.post_id || '-'}</b>
+          ${link}
+          <span>${status} / ${time}</span>
+          <small>${escapeLogText(item.reason)}</small>
+        </div>`;
+      }).join('');
+    }
+
+    let postingLogRequestId = 0;
+    let selectedLogDate = '';
+
+    function loadPostingLogs(date = selectedLogDate) {
+      const dateChanged = date !== selectedLogDate;
+      selectedLogDate = date;
+      const requestId = ++postingLogRequestId;
+      const params = new URLSearchParams({ limit: '100' });
+      if (date) params.set('date', date);
+      if (dateChanged) {
+        document.getElementById('postingLogs').innerHTML =
+          '<div class="log-empty">게시 로그를 불러오는 중입니다.</div>';
+      }
+      fetch(`/api/posting-logs?${params}`)
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (requestId === postingLogRequestId) renderPostingLogs(data);
+        })
+        .catch(() => {});
+    }
+
+    loadPostingLogs();
+    setInterval(loadPostingLogs, 60 * 1000);
 
     // 유저 메뉴 드롭다운 토글
     document.getElementById('userMenuBtn').addEventListener('click', e => {
@@ -694,6 +799,7 @@
           const accountInputs = card.querySelectorAll('.naver-field input');
           const postSelect = card.querySelector('.post-select');
           const mode = card.querySelector('.radio-row input:checked')?.parentElement?.textContent.trim() || '순차적';
+          const scheduleType = card.querySelector('.schedule-type input:checked')?.value || 'daily';
           return {
             id: idx + 1,
             name: card.querySelector('.slot-head h3')?.textContent.trim() || `게시 작업 슬롯 #${idx + 1}`,
@@ -706,13 +812,21 @@
             postId: parseInt(postSelect?.value || '1', 10),
             postTitle: postSelect?.selectedOptions[0]?.textContent.trim() || '',
             mode,
+            scheduleType,
+            weekdays: Array.from(card.querySelectorAll('.weekday-row input:checked')).map(input => input.value),
             time: card.querySelector('.time-select')?.value || '',
-            stages: Array.from(card.querySelectorAll('.stage-row')).map(row => ({
-              name: row.querySelector('.stage-name')?.value.trim() || '',
-              active: row.querySelector('.stage-active')?.checked || false,
-            })),
           };
         })
+      };
+    }
+
+    function collectDashboardConfig() {
+      return {
+        ...collectSlotConfig(),
+        postCards: Array.from(document.querySelectorAll('.post-card')).map((card, idx) => ({
+          id: parseInt(card.dataset.cardId || idx + 1, 10),
+          active: card.querySelector('.post-switch input')?.checked !== false,
+        })),
       };
     }
 
@@ -740,18 +854,16 @@
           const input = label.querySelector('input');
           if (input) input.checked = label.textContent.trim() === slot.mode;
         });
+        const scheduleType = slot.scheduleType === 'weekly' ? 'weekly' : 'daily';
+        const scheduleInput = card.querySelector(`.schedule-type input[value="${scheduleType}"]`);
+        if (scheduleInput) scheduleInput.checked = true;
+        const selectedWeekdays = Array.isArray(slot.weekdays) ? slot.weekdays : [];
+        card.querySelectorAll('.weekday-row input').forEach(input => {
+          input.checked = selectedWeekdays.includes(input.value);
+        });
+        updateScheduleVisibility(card);
         const timeSelect = card.querySelector('.time-select');
         if (timeSelect && slot.time) timeSelect.value = slot.time;
-        if (Array.isArray(slot.stages)) {
-          const stageRows = card.querySelectorAll('.stage-row');
-          slot.stages.forEach((s, si) => {
-            if (!stageRows[si]) return;
-            const nameInput = stageRows[si].querySelector('.stage-name');
-            const activeChk = stageRows[si].querySelector('.stage-active');
-            if (nameInput) nameInput.value = s.name || '';
-            if (activeChk) activeChk.checked = s.active === true;
-          });
-        }
       });
     }
 
@@ -950,6 +1062,19 @@
     });
 
     // 5. 시간 선택 (30분 단위)
+    function updateScheduleVisibility(card) {
+      const weekly = card.querySelector('.schedule-type input:checked')?.value === 'weekly';
+      const weekdays = card.querySelector('.weekday-row');
+      if (weekdays) weekdays.hidden = !weekly;
+    }
+
+    document.querySelectorAll('.slot-card').forEach(card => {
+      card.querySelectorAll('.schedule-type input').forEach(input => {
+        input.addEventListener('change', () => updateScheduleVisibility(card));
+      });
+      updateScheduleVisibility(card);
+    });
+
     document.querySelectorAll('.time-select').forEach(sel => {
       for (let h = 0; h < 24; h++) {
         for (let m of [0, 30]) {
@@ -1004,6 +1129,12 @@
         s.addEventListener('click', () => {
           selYear = calYear; selMonth = calMonth; selDay = d;
           renderCalendar();
+          const selectedDate = [
+            selYear,
+            String(selMonth + 1).padStart(2, '0'),
+            String(selDay).padStart(2, '0'),
+          ].join('-');
+          loadPostingLogs(selectedDate);
         });
         daysEl.appendChild(s);
       }
@@ -1330,30 +1461,22 @@
           const slotId = this.dataset.slot;
           const originalText = this.textContent;
 
-          // 슬롯 카드에서 라이브 입력값 수집
-          const card = this.closest('.slot-card');
-          const accountInputs = card.querySelectorAll('.naver-field input');
-          const naverId   = accountInputs[0]?.value.trim() || '';
-          const naverPw   = accountInputs[1]?.value || '';
-          const username  = accountInputs[2]?.value.trim() || '';
-          const cafeUrl   = card.querySelector('.cafe-url-input')?.value.trim() || '';
-          const boardName = card.querySelector('.board-name-input')?.value.trim() || '';
-
-          // 선택된 콘텐츠 소스에서 제목/본문 수집
-          const postId    = card.querySelector('.post-select')?.value || '1';
-          const postCard  = document.querySelector(`.post-card[data-card-id="${postId}"]`);
-          const postTitle   = postCard?.querySelector('.post-title')?.value.trim() || '';
-          const htmlContent = postCard?.querySelector('.post-summary')?.innerHTML || '';
-
           this.disabled = true;
           this.textContent = '게시 중...';
           this.classList.add('running');
 
           try {
+            const configResponse = await fetch('/api/config', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(collectDashboardConfig()),
+            });
+            if (!configResponse.ok) throw new Error('현재 설정을 저장하지 못했습니다.');
+
             const res = await fetch(`/api/run-slot/${slotId}`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ naverId, naverPw, username, cafeUrl, boardName, postTitle, htmlContent }),
+              body: JSON.stringify({}),
             });
             const data = await res.json();
 
@@ -1363,6 +1486,11 @@
                 title: `슬롯 #${slotId} 게시 실패`,
               });
               return;
+            }
+
+            if (data.nextPostId) {
+              const postSelect = this.closest('.slot-card')?.querySelector('.post-select');
+              if (postSelect) postSelect.value = String(data.nextPostId);
             }
 
             const linkHtml = data.url

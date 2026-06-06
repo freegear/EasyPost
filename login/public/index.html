@@ -8,67 +8,92 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #0f0f0f;
+      background: #eef4ff url('/login-background.png') center center / cover no-repeat fixed;
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
+      padding: 24px;
     }
     .card {
-      background: #1a1a1a;
-      border: 1px solid #2a2a2a;
-      border-radius: 14px;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.64), rgba(235, 243, 255, 0.38));
+      border: 1px solid rgba(255, 255, 255, 0.86);
+      border-radius: 24px;
       padding: 44px 40px;
       width: 100%;
       max-width: 400px;
+      box-shadow:
+        0 30px 80px rgba(39, 68, 132, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(24px) saturate(145%);
+      -webkit-backdrop-filter: blur(24px) saturate(145%);
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 18% 0%, rgba(255, 255, 255, 0.78), transparent 42%);
     }
     .logo {
+      position: relative;
       display: block;
       width: 190px;
       height: auto;
-      margin-bottom: 10px;
+      margin: 0 auto 10px;
     }
-    .subtitle {
-      font-size: 13px;
-      color: #555;
-      margin-bottom: 36px;
-    }
+    form { position: relative; }
     label {
       display: block;
       font-size: 12px;
-      color: #777;
+      color: #41516d;
       margin-bottom: 6px;
       letter-spacing: 0.3px;
+      font-weight: 600;
     }
     input {
       width: 100%;
       padding: 11px 14px;
-      background: #111;
-      border: 1px solid #2e2e2e;
-      border-radius: 8px;
-      color: #e0e0e0;
+      background: rgba(255, 255, 255, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.92);
+      border-radius: 12px;
+      color: #17233b;
       font-size: 14px;
       outline: none;
-      transition: border-color 0.15s;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.85),
+        0 8px 24px rgba(43, 70, 132, 0.08);
+      backdrop-filter: blur(12px);
+      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
       margin-bottom: 16px;
     }
-    input:focus { border-color: #4f8ef7; }
-    input::placeholder { color: #3a3a3a; }
+    input:focus {
+      background: rgba(255, 255, 255, 0.72);
+      border-color: rgba(79, 142, 247, 0.72);
+      box-shadow: 0 0 0 4px rgba(79, 142, 247, 0.13), 0 10px 28px rgba(43, 70, 132, 0.12);
+    }
+    input::placeholder { color: #8793a8; }
     button {
       width: 100%;
       padding: 12px;
-      background: #4f8ef7;
+      background: linear-gradient(135deg, rgba(75, 139, 248, 0.95), rgba(82, 105, 230, 0.92));
       color: #fff;
-      border: none;
-      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 12px;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       margin-top: 4px;
-      transition: background 0.15s, opacity 0.15s;
+      box-shadow: 0 12px 26px rgba(61, 104, 210, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.42);
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
       letter-spacing: 0.2px;
     }
-    button:hover { background: #3a7ae0; }
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 30px rgba(61, 104, 210, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.48);
+    }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
     .error {
       color: #f56565;
@@ -82,7 +107,6 @@
 <body>
   <div class="card">
     <img class="logo" src="/easypost-logo.svg" alt="EasyPost">
-    <p class="subtitle">계속하려면 로그인하세요.</p>
     <form id="loginForm">
       <label for="username">아이디</label>
       <input type="text" id="username" name="username" placeholder="아이디 입력" autocomplete="username" required>

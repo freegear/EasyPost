@@ -10,6 +10,8 @@ const PORT = 3000;
 const FLOWISE_URL = process.env.FLOWISE_URL || 'http://localhost:3991';
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const POST_COUNT = 12;
+const SCHEDULER_TIMEZONE = 'Asia/Seoul';
+const WEEKDAY_KEYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 
 const pool = new Pool({
   host: process.env.DB_HOST || 'easypost_postgres',
@@ -33,6 +35,9 @@ const HTML_DIR = path.join(__dirname, 'html');
 
 function requireLogin(req, res, next) {
   if (req.session && req.session.user) return next();
+  if (req.path.startsWith('/api/') || req.originalUrl.startsWith('/api/')) {
+    return res.status(401).json({ error: '재로그인이 필요합니다.', loginRequired: true });
+  }
   res.redirect('/');
 }
 
@@ -103,6 +108,42 @@ function getReqUser(req) {
   return req.session.user || req.apiUser;
 }
 
+function getSeoulScheduleParts(date = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-US', {
+    timeZone: SCHEDULER_TIMEZONE,
+    weekday: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).formatToParts(date);
+  const value = type => parts.find(part => part.type === type)?.value || '';
+  const hour = Number.parseInt(value('hour'), 10) % 24;
+  const minute = Number.parseInt(value('minute'), 10);
+  return {
+    weekday: value('weekday').toLowerCase(),
+    hour,
+    minute,
+    time: `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`,
+  };
+}
+
+function normalizeScheduleTime(value) {
+  const match = String(value || '').trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
+  if (!match) return '';
+  let hour = Number.parseInt(match[1], 10);
+  const minute = Number.parseInt(match[2], 10);
+  const ampm = String(match[3] || '').toUpperCase();
+  if (minute < 0 || minute > 59) return '';
+  if (ampm) {
+    if (hour < 1 || hour > 12) return '';
+    if (ampm === 'AM') hour %= 12;
+    else hour = (hour % 12) + 12;
+  } else if (hour < 0 || hour > 23) {
+    return '';
+  }
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+}
+
 function normalizeConfig(config) {
   const postCards = Array.isArray(config.postCards)
     ? config.postCards
@@ -127,15 +168,43 @@ function normalizeConfig(config) {
       postId: Number.parseInt(slot.postId, 10) || 1,
       postTitle: String(slot.postTitle || ''),
       mode: String(slot.mode || '순차적'),
+      scheduleType: slot.scheduleType === 'weekly' ? 'weekly' : 'daily',
+      weekdays: Array.isArray(slot.weekdays)
+        ? slot.weekdays.filter(day => ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'].includes(day))
+        : [],
       time: String(slot.time || ''),
-      stages: Array.isArray(slot.stages)
-        ? slot.stages.slice(0, 4).map(s => ({
-            name: String(s.name || ''),
-            active: s.active === true,
-          }))
-        : Array.from({ length: 4 }, () => ({ name: '', active: false })),
     })),
   };
+}
+
+function getActivePostIds(config) {
+  return config.postCards
+    .filter(card => card.active !== false)
+    .map(card => card.id)
+    .filter(id => Number.isInteger(id) && id >= 1 && id <= POST_COUNT)
+    .sort((a, b) => a - b);
+}
+
+function selectPostId(config, slot, randomIndex = null) {
+  const activePostIds = getActivePostIds(config);
+  if (activePostIds.length === 0) throw new Error('활성화된 게시글이 없습니다.');
+
+  if (slot.mode === '랜덤') {
+    const index = randomIndex === null ? crypto.randomInt(activePostIds.length) : randomIndex;
+    return activePostIds[index];
+  }
+
+  const postId = Number.parseInt(slot.postId, 10) || 1;
+  if (!activePostIds.includes(postId)) {
+    throw new Error(`선택된 콘텐츠 Post #${postId}가 비활성화 상태입니다.`);
+  }
+  return postId;
+}
+
+function getNextSequentialPostId(config, postedPostId) {
+  const activePostIds = getActivePostIds(config);
+  if (activePostIds.length === 0) return 1;
+  return activePostIds.find(postId => postId > postedPostId) || activePostIds[0];
 }
 
 function defaultConfig() {
@@ -226,6 +295,64 @@ async function ensureUserData(user) {
     if (err.code !== 'ENOENT') throw err;
     await fs.writeFile(getConfigPath(user), `${JSON.stringify(defaultConfig(), null, 2)}\n`, 'utf8');
   }
+}
+
+async function ensurePostingLogTable() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS posting_logs (
+      id BIGSERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      username VARCHAR(50) NOT NULL,
+      slot_id INTEGER NOT NULL,
+      slot_name VARCHAR(255) NOT NULL,
+      post_id INTEGER,
+      schedule_type VARCHAR(20),
+      scheduled_for TIMESTAMPTZ NOT NULL,
+      status VARCHAR(20) NOT NULL,
+      reason TEXT,
+      posted_url TEXT,
+      detail JSONB NOT NULL DEFAULT '{}'::jsonb,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE (user_id, slot_id, scheduled_for)
+    )
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS posting_logs_user_created_idx
+    ON posting_logs (user_id, created_at DESC)
+  `);
+}
+
+async function reservePostingLog({ user, slot, scheduledFor, status = 'running', reason = '' }) {
+  const result = await pool.query(
+    `INSERT INTO posting_logs
+      (user_id, username, slot_id, slot_name, post_id, schedule_type, scheduled_for, status, reason)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+     ON CONFLICT (user_id, slot_id, scheduled_for) DO NOTHING
+     RETURNING id`,
+    [
+      user.id,
+      user.username,
+      slot.id,
+      slot.name,
+      slot.postId || null,
+      slot.scheduleType || 'daily',
+      scheduledFor,
+      status,
+      reason,
+    ],
+  );
+  return result.rows[0]?.id || null;
+}
+
+async function completePostingLog(id, { status, reason = '', postedUrl = null, detail = {} }) {
+  await pool.query(
+    `UPDATE posting_logs
+     SET status = $2, reason = $3, posted_url = $4, detail = $5::jsonb,
+         post_id = COALESCE($6, post_id), updated_at = CURRENT_TIMESTAMP
+     WHERE id = $1`,
+    [id, status, reason, postedUrl, JSON.stringify(detail), detail.postId || null],
+  );
 }
 
 function mediaExtension(mime, fallback = 'bin') {
@@ -415,6 +542,32 @@ app.post('/api/config', requireLogin, async (req, res) => {
   }
 });
 
+app.get('/api/posting-logs', requireLogin, async (req, res) => {
+  const limit = Math.min(Math.max(Number.parseInt(req.query.limit, 10) || 20, 1), 100);
+  const date = String(req.query.date || '').trim();
+  if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return res.status(400).json({ error: '날짜 형식이 올바르지 않습니다. (YYYY-MM-DD)' });
+  }
+
+  try {
+    const result = await pool.query(
+      `SELECT id, slot_id, slot_name, post_id, schedule_type, scheduled_for,
+              status, reason, posted_url, detail, created_at, updated_at
+       FROM posting_logs
+       WHERE user_id = $1
+         AND status <> 'skipped'
+         AND ($3::text = '' OR to_char(created_at AT TIME ZONE 'Asia/Seoul', 'YYYY-MM-DD') = $3)
+       ORDER BY created_at DESC
+       LIMIT $2`,
+      [req.session.user.id, limit, date],
+    );
+    res.json({ logs: result.rows });
+  } catch (err) {
+    console.error('Posting logs read error:', err);
+    res.status(500).json({ error: '게시 로그를 불러오지 못했습니다.' });
+  }
+});
+
 app.get('/api/posts', requireLogin, async (req, res) => {
   try {
     await ensureUserData(req.session.user);
@@ -553,6 +706,158 @@ function getSessionPath(user, slotId) {
   return path.join(getSessionDir(user), `slot_${slotId}.json`);
 }
 
+async function advanceSequentialSlot(user, slotId, postedPostId) {
+  const configPath = getConfigPath(user);
+  const raw = await fs.readFile(configPath, 'utf8');
+  const config = normalizeConfig(JSON.parse(raw));
+  const slot = config.slots.find(item => item.id === slotId);
+  if (!slot || slot.mode !== '순차적') return null;
+
+  const nextPostId = getNextSequentialPostId(config, postedPostId);
+  slot.postId = nextPostId;
+  const payload = { ...config, updatedAt: new Date().toISOString() };
+  await fs.writeFile(configPath, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');
+  return nextPostId;
+}
+
+async function executeStoredSlot(user, slotId, config = null) {
+  await ensureUserData(user);
+  if (!config) {
+    const raw = await fs.readFile(getConfigPath(user), 'utf8');
+    config = normalizeConfig(JSON.parse(raw));
+  }
+
+  const slot = config.slots[slotId - 1];
+  if (!slot) throw new Error('슬롯을 찾을 수 없습니다.');
+  if (!slot.active) throw new Error('비활성화된 슬롯입니다.');
+  if (!slot.naverId) throw new Error('NAVER ID가 설정되지 않았습니다.');
+  if (!slot.naverPw) throw new Error('NAVER 비밀번호가 설정되지 않았습니다.');
+  if (!slot.cafeUrl || slot.cafeUrl.includes('...')) throw new Error('카페 URL이 설정되지 않았습니다.');
+
+  const postId = selectPostId(config, slot);
+  const raw = await fs.readFile(path.join(getPostDir(user, postId), 'index.html'), 'utf8');
+  const extracted = extractSavedPost(raw, postId);
+  const sessionDir = getSessionDir(user);
+  await fs.mkdir(sessionDir, { recursive: true });
+
+  const NaverCafePoster = require('./playwright/naver');
+  const poster = new NaverCafePoster({
+    naverId: slot.naverId,
+    naverPw: slot.naverPw,
+    cafeUrl: slot.cafeUrl,
+    boardName: slot.boardName || '',
+    username: slot.username || '',
+    sessionPath: getSessionPath(user, slotId),
+  });
+
+  try {
+    await poster.launch();
+    await poster.ensureLogin();
+    const result = await poster.post({
+      title: extracted.title || slot.postTitle || `Post #${postId}`,
+      htmlContent: extracted.content || '',
+      postDir: getPostDir(user, postId),
+    });
+    const nextPostId = slot.mode === '순차적'
+      ? await advanceSequentialSlot(user, slot.id, postId)
+      : null;
+    return { success: true, url: result.url, log: poster.log, slot, postId, nextPostId };
+  } catch (err) {
+    err.posterLog = poster.log;
+    throw err;
+  } finally {
+    try { await poster.close(); } catch { /* 브라우저 종료 오류 무시 */ }
+  }
+}
+
+function evaluateSlotSchedule(config, slot, scheduleParts) {
+  try {
+    selectPostId(config, slot, 0);
+  } catch (err) {
+    return { due: false, reason: err.message };
+  }
+
+  const slotTime = normalizeScheduleTime(slot.time);
+  if (!slotTime) return { due: false, reason: '글쓰기 시각이 올바르지 않습니다.' };
+  if (slotTime !== scheduleParts.time) {
+    return { due: false, reason: `예약 시각이 아닙니다. (예약 ${slotTime}, 현재 ${scheduleParts.time})` };
+  }
+
+  if (slot.scheduleType === 'weekly' && !slot.weekdays.includes(scheduleParts.weekday)) {
+    return { due: false, reason: `오늘(${scheduleParts.weekday})은 활성화된 요일이 아닙니다.` };
+  }
+  return { due: true, reason: '예약 조건이 일치합니다.' };
+}
+
+async function processScheduledSlot(user, config, slot, scheduledFor, scheduleParts) {
+  const evaluation = evaluateSlotSchedule(config, slot, scheduleParts);
+  const prefix = `[Scheduler][${user.username}][Slot #${slot.id}]`;
+  if (!evaluation.due) {
+    console.log(`${prefix} SKIPPED: ${evaluation.reason}`);
+    return;
+  }
+
+  const logId = await reservePostingLog({
+    user,
+    slot,
+    scheduledFor,
+    status: 'running',
+    reason: evaluation.reason,
+  });
+  if (!logId) return;
+
+  console.log(`${prefix} START: ${evaluation.reason}`);
+  try {
+    const result = await executeStoredSlot(user, slot.id, config);
+    await completePostingLog(logId, {
+      status: 'success',
+      reason: '게시가 완료되었습니다.',
+      postedUrl: result.url || null,
+      detail: { log: result.log || [], postId: result.postId },
+    });
+    console.log(`${prefix} SUCCESS Post #${result.postId}: ${result.url || '게시 URL 없음'}`);
+  } catch (err) {
+    await completePostingLog(logId, {
+      status: 'failed',
+      reason: err.message,
+      detail: { log: err.posterLog || [] },
+    });
+    console.error(`${prefix} FAILED: ${err.message}`);
+  }
+}
+
+let schedulerTickRunning = false;
+
+async function runSchedulerTick(now = new Date()) {
+  const scheduleParts = getSeoulScheduleParts(now);
+  if (![0, 30].includes(scheduleParts.minute) || schedulerTickRunning) return;
+
+  schedulerTickRunning = true;
+  const scheduledFor = new Date(now);
+  scheduledFor.setSeconds(0, 0);
+  try {
+    const users = await pool.query('SELECT id, username FROM users WHERE is_active = true ORDER BY id');
+    const jobs = [];
+    for (const user of users.rows) {
+      try {
+        await ensureUserData(user);
+        const raw = await fs.readFile(getConfigPath(user), 'utf8');
+        const config = normalizeConfig(JSON.parse(raw));
+        for (const slot of config.slots.filter(item => item.active)) {
+          jobs.push(processScheduledSlot(user, config, slot, scheduledFor, scheduleParts));
+        }
+      } catch (err) {
+        console.error(`[Scheduler][${user.username}] 설정 확인 실패: ${err.message}`);
+      }
+    }
+    await Promise.allSettled(jobs);
+  } catch (err) {
+    console.error(`[Scheduler] 실행 실패: ${err.message}`);
+  } finally {
+    schedulerTickRunning = false;
+  }
+}
+
 app.post('/api/run-slot/:slotId', requireApiKeyOrLogin, async (req, res) => {
   const user   = getReqUser(req);
   const slotId = Number.parseInt(req.params.slotId, 10);
@@ -561,7 +866,17 @@ app.post('/api/run-slot/:slotId', requireApiKeyOrLogin, async (req, res) => {
   }
 
   const body = req.body || {};
-  let naverId, naverPw, username, cafeUrl, boardName, postTitle, postContent;
+  if (!body.naverId) {
+    try {
+      const result = await executeStoredSlot(user, slotId);
+      return res.json(result);
+    } catch (err) {
+      console.error(`Run-slot #${slotId} error:`, err.message);
+      return res.status(500).json({ error: err.message, log: err.posterLog || [] });
+    }
+  }
+
+  let naverId, naverPw, username, cafeUrl, boardName, postTitle, postContent, postDir;
 
   if (body.naverId) {
     // 프론트엔드에서 라이브 입력값 직접 전달
@@ -572,48 +887,12 @@ app.post('/api/run-slot/:slotId', requireApiKeyOrLogin, async (req, res) => {
     boardName   = body.boardName   || '';
     postTitle   = body.postTitle   || '';
     postContent = body.htmlContent || '';
+    const _postId = Number.parseInt(body.postId, 10);
+    if (_postId >= 1 && _postId <= POST_COUNT) postDir = getPostDir(user, _postId);
 
     if (!naverId)                         return res.status(400).json({ error: 'NAVER ID가 설정되지 않았습니다.' });
     if (!naverPw)                         return res.status(400).json({ error: 'NAVER 비밀번호가 설정되지 않았습니다.' });
     if (!cafeUrl || cafeUrl.includes('...')) return res.status(400).json({ error: '카페 URL이 설정되지 않았습니다.' });
-  } else {
-    // body 없으면 저장된 config 파일에서 읽기 (기존 방식)
-    let config;
-    try {
-      await ensureUserData(user);
-      const raw = await fs.readFile(getConfigPath(user), 'utf8');
-      config = normalizeConfig(JSON.parse(raw));
-    } catch (err) {
-      return res.status(500).json({ error: '설정을 불러오지 못했습니다.' });
-    }
-
-    const slot = config.slots[slotId - 1];
-    if (!slot)          return res.status(404).json({ error: '슬롯을 찾을 수 없습니다.' });
-    if (!slot.active)   return res.status(400).json({ error: '비활성화된 슬롯입니다.' });
-    if (!slot.naverId)  return res.status(400).json({ error: 'NAVER ID가 설정되지 않았습니다.' });
-    if (!slot.naverPw)  return res.status(400).json({ error: 'NAVER 비밀번호가 설정되지 않았습니다.' });
-    if (!slot.cafeUrl || slot.cafeUrl.includes('...'))
-      return res.status(400).json({ error: '카페 URL이 설정되지 않았습니다.' });
-
-    naverId   = slot.naverId;
-    naverPw   = slot.naverPw;
-    username  = slot.username  || '';
-    cafeUrl   = slot.cafeUrl;
-    boardName = slot.boardName || '';
-
-    const postId       = slot.postId || 1;
-    const postFilePath = path.join(getPostDir(user, postId), 'index.html');
-    postTitle   = `Post #${postId}`;
-    postContent = '';
-    try {
-      const raw       = await fs.readFile(postFilePath, 'utf8');
-      const extracted = extractSavedPost(raw, postId);
-      postTitle   = extracted.title   || postTitle;
-      postContent = extracted.content || '';
-    } catch (err) {
-      if (err.code === 'ENOENT') return res.status(404).json({ error: `Post #${postId} 게시글 내용이 없습니다.` });
-      return res.status(500).json({ error: '게시글을 불러오지 못했습니다.' });
-    }
   }
 
   // 세션 디렉토리 준비
@@ -640,13 +919,13 @@ app.post('/api/run-slot/:slotId', requireApiKeyOrLogin, async (req, res) => {
   try {
     await poster.launch();
     await poster.ensureLogin();
-    const result = await poster.post({ title: postTitle, htmlContent: postContent });
+    const result = await poster.post({ title: postTitle, htmlContent: postContent, postDir });
     res.json({ success: true, url: result.url, log: poster.log });
   } catch (err) {
     console.error(`Run-slot #${slotId} error:`, err.message);
     res.status(500).json({ error: err.message, log: poster.log });
   } finally {
-    await poster.close();
+    try { await poster.close(); } catch { /* 브라우저 종료 오류 무시 */ }
   }
 });
 
@@ -671,6 +950,27 @@ app.post('/logout', (req, res) => {
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
-fs.mkdir(DATA_DIR, { recursive: true })
-  .catch(err => console.error('Data directory init error:', err))
-  .finally(() => app.listen(PORT, () => console.log(`Login server running on port ${PORT}`)));
+async function initializeApplication() {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+  await ensurePostingLogTable();
+  app.listen(PORT, () => console.log(`Login server running on port ${PORT}`));
+  setInterval(() => runSchedulerTick().catch(err => console.error('[Scheduler] tick error:', err)), 30 * 1000);
+  runSchedulerTick().catch(err => console.error('[Scheduler] initial tick error:', err));
+}
+
+if (require.main === module) {
+  initializeApplication().catch(err => {
+    console.error('Application init error:', err);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = {
+  evaluateSlotSchedule,
+  getActivePostIds,
+  getNextSequentialPostId,
+  getSeoulScheduleParts,
+  normalizeScheduleTime,
+  runSchedulerTick,
+  selectPostId,
+};
