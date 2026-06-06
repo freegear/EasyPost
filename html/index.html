@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>내 카페 등록 대시보드</title>
-  <link rel="stylesheet" href="/css/style.css"/>
+  <link rel="stylesheet" href="/css/style.css?v=2"/>
 </head>
 <body>
   <div class="app">
@@ -38,6 +38,17 @@
               <span>로그아웃</span>
             </div>
           </div>
+          <div class="drop-apikey-section">
+            <div class="drop-apikey-label">
+              <span>&#128273; Flowise API Key</span>
+              <button class="apikey-regen-btn" id="apikeyRegenBtn" title="새 Key 발급">&#8635;</button>
+            </div>
+            <div class="apikey-row">
+              <input class="apikey-input" id="apikeyValue" type="password" readonly placeholder="발급 전">
+              <button class="apikey-eye-btn" id="apikeyEyeBtn" title="보기/숨기기">&#128065;</button>
+              <button class="apikey-copy-btn" id="apikeyCopyBtn" title="복사">&#128203;</button>
+            </div>
+          </div>
         </div>
       </div>
     </header>
@@ -63,6 +74,7 @@
           <article class="slot-card">
             <div class="slot-head">
               <h3>게시 작업 슬롯 #1</h3>
+              <button class="run-slot-btn" data-slot="1" type="button">게시</button>
               <label class="switch"><input type="checkbox" checked><span></span></label>
             </div>
             <div class="field-title">네이버 계정</div>
@@ -80,9 +92,21 @@
                 </button>
               </div>
             </div>
+            <div class="naver-field">
+              <span>USERNAME</span>
+              <input type="text" placeholder="사용자 이름">
+            </div>
             <div class="field-title">카페 정보 <i>i</i></div>
-            <div class="input info">https://cafe.naver.com/...</div>
-            <div class="input">Board Name (Allboard)</div>
+            <div class="naver-field">
+              <span>Cafe URL</span>
+              <div class="cafe-url-wrapper">
+                <input class="input cafe-url-input" type="text" placeholder="https://cafe.naver.com/...">
+              </div>
+            </div>
+            <div class="naver-field">
+              <span>게시판 계층 / 이름</span>
+              <input class="input board-name-input" type="text" placeholder="Board Name (Allboard)">
+            </div>
             <div class="field-title">콘텐츠 소스</div>
             <div class="row">
               <select class="post-select">
@@ -101,6 +125,13 @@
             <div class="field-title">글쓰기 시각</div>
             <div class="row start-row">
               <select class="time-select"></select>
+            </div>
+            <div class="field-title">단계</div>
+            <div class="stages-list">
+              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 1"></div>
+              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 2"></div>
+              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 3"></div>
+              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 4"></div>
             </div>
             <div class="popover" style="display:none">
               <div class="pop-title">콘텐츠 컬렉션 #A 관리</div>
@@ -125,6 +156,7 @@
           <article class="slot-card">
             <div class="slot-head">
               <h3>게시 작업 슬롯 #2</h3>
+              <button class="run-slot-btn" data-slot="2" type="button">게시</button>
               <label class="switch"><input type="checkbox" checked><span></span></label>
             </div>
             <div class="field-title">네이버 계정</div>
@@ -142,9 +174,21 @@
                 </button>
               </div>
             </div>
+            <div class="naver-field">
+              <span>USERNAME</span>
+              <input type="text" placeholder="사용자 이름">
+            </div>
             <div class="field-title">카페 정보 <i>i</i></div>
-            <div class="input info">https://cafe.naver.com/...</div>
-            <div class="input">Board Name (Allboard)</div>
+            <div class="naver-field">
+              <span>Cafe URL</span>
+              <div class="cafe-url-wrapper">
+                <input class="input cafe-url-input" type="text" placeholder="https://cafe.naver.com/...">
+              </div>
+            </div>
+            <div class="naver-field">
+              <span>게시판 계층 / 이름</span>
+              <input class="input board-name-input" type="text" placeholder="Board Name (Allboard)">
+            </div>
             <div class="field-title">콘텐츠 소스</div>
             <div class="row">
               <select class="post-select">
@@ -163,6 +207,13 @@
             <div class="field-title">글쓰기 시각</div>
             <div class="row start-row">
               <select class="time-select"></select>
+            </div>
+            <div class="field-title">단계</div>
+            <div class="stages-list">
+              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 1"></div>
+              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 2"></div>
+              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 3"></div>
+              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 4"></div>
             </div>
             <div class="popover" style="display:none">
               <div class="pop-title">콘텐츠 컬렉션 #A 관리</div>
@@ -187,6 +238,7 @@
           <article class="slot-card">
             <div class="slot-head">
               <h3>게시 작업 슬롯 #3</h3>
+              <button class="run-slot-btn" data-slot="3" type="button">게시</button>
               <label class="switch"><input type="checkbox" checked><span></span></label>
             </div>
             <div class="field-title">네이버 계정</div>
@@ -204,9 +256,21 @@
                 </button>
               </div>
             </div>
+            <div class="naver-field">
+              <span>USERNAME</span>
+              <input type="text" placeholder="사용자 이름">
+            </div>
             <div class="field-title">카페 정보 <i>i</i></div>
-            <div class="input info">https://cafe.naver.com/...</div>
-            <div class="input">Board Name (Allboard)</div>
+            <div class="naver-field">
+              <span>Cafe URL</span>
+              <div class="cafe-url-wrapper">
+                <input class="input cafe-url-input" type="text" placeholder="https://cafe.naver.com/...">
+              </div>
+            </div>
+            <div class="naver-field">
+              <span>게시판 계층 / 이름</span>
+              <input class="input board-name-input" type="text" placeholder="Board Name (Allboard)">
+            </div>
             <div class="field-title">콘텐츠 소스</div>
             <div class="row">
               <select class="post-select">
@@ -225,6 +289,13 @@
             <div class="field-title">글쓰기 시각</div>
             <div class="row start-row">
               <select class="time-select"></select>
+            </div>
+            <div class="field-title">단계</div>
+            <div class="stages-list">
+              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 1"></div>
+              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 2"></div>
+              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 3"></div>
+              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 4"></div>
             </div>
             <div class="popover" style="display:none">
               <div class="pop-title">콘텐츠 컬렉션 #A 관리</div>
@@ -249,6 +320,7 @@
           <article class="slot-card">
             <div class="slot-head">
               <h3>게시 작업 슬롯 #4</h3>
+              <button class="run-slot-btn" data-slot="4" type="button">게시</button>
               <label class="switch"><input type="checkbox" checked><span></span></label>
             </div>
             <div class="field-title">네이버 계정</div>
@@ -266,9 +338,21 @@
                 </button>
               </div>
             </div>
+            <div class="naver-field">
+              <span>USERNAME</span>
+              <input type="text" placeholder="사용자 이름">
+            </div>
             <div class="field-title">카페 정보 <i>i</i></div>
-            <div class="input info">https://cafe.naver.com/...</div>
-            <div class="input">Board Name (Allboard)</div>
+            <div class="naver-field">
+              <span>Cafe URL</span>
+              <div class="cafe-url-wrapper">
+                <input class="input cafe-url-input" type="text" placeholder="https://cafe.naver.com/...">
+              </div>
+            </div>
+            <div class="naver-field">
+              <span>게시판 계층 / 이름</span>
+              <input class="input board-name-input" type="text" placeholder="Board Name (Allboard)">
+            </div>
             <div class="field-title">콘텐츠 소스</div>
             <div class="row">
               <select class="post-select">
@@ -287,6 +371,13 @@
             <div class="field-title">글쓰기 시각</div>
             <div class="row start-row">
               <select class="time-select"></select>
+            </div>
+            <div class="field-title">단계</div>
+            <div class="stages-list">
+              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 1"></div>
+              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 2"></div>
+              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 3"></div>
+              <div class="stage-row"><label class="switch stage-switch"><input type="checkbox" class="stage-active"><span></span></label><input class="stage-name" type="text" placeholder="단계 4"></div>
             </div>
             <div class="popover" style="display:none">
               <div class="pop-title">콘텐츠 컬렉션 #A 관리</div>
@@ -379,6 +470,7 @@
         <input id="editorImageInput" type="file" accept="image/*" style="display:none">
         <button id="toolInsertVideo">▶ 동영상</button>
         <input id="editorVideoInput" type="file" accept="video/*" style="display:none">
+        <button id="toolInsertYoutube">▶ YouTube</button>
         <button id="toolInsertLink">🔗 링크</button>
         <span class="toolbar-sep"></span>
         <button data-cmd="undo">↩</button>
@@ -420,6 +512,7 @@
     <div class="dialog-popup-inner">
       <h3 id="dialogTitle">알림</h3>
       <p id="dialogMessage"></p>
+      <input id="dialogInput" type="text" style="display:none" placeholder="">
       <div class="dialog-popup-actions">
         <button class="dialog-btn-secondary" id="dialogCancel" style="display:none">취소</button>
         <button class="dialog-btn-primary" id="dialogOk">확인</button>
@@ -455,6 +548,51 @@
         .then(() => { window.location.href = '/'; });
     });
 
+    // ── API Key 관리 ────────────────────────────────────────────────────────
+    (function () {
+      const input  = document.getElementById('apikeyValue');
+      const eyeBtn = document.getElementById('apikeyEyeBtn');
+      const copyBtn = document.getElementById('apikeyCopyBtn');
+      const regenBtn = document.getElementById('apikeyRegenBtn');
+
+      // 페이지 로드 시 현재 키 조회
+      fetch('/api/apikey')
+        .then(r => r.json())
+        .then(d => { if (d.key) input.value = d.key; });
+
+      // 보기/숨기기 토글
+      eyeBtn.addEventListener('click', () => {
+        input.type = input.type === 'password' ? 'text' : 'password';
+      });
+
+      // 클립보드 복사
+      copyBtn.addEventListener('click', async () => {
+        if (!input.value) return;
+        try {
+          await navigator.clipboard.writeText(input.value);
+          const orig = copyBtn.textContent;
+          copyBtn.textContent = '✔';
+          setTimeout(() => { copyBtn.textContent = orig; }, 1500);
+        } catch { /* 구형 브라우저 fallback */ }
+      });
+
+      // 새 Key 발급
+      regenBtn.addEventListener('click', async () => {
+        const ok = await showDialogPopup(
+          '기존 API Key는 즉시 무효화됩니다. 새로 발급할까요?',
+          { title: 'API Key 재발급', confirm: true }
+        );
+        if (!ok) return;
+        const res = await fetch('/api/apikey', { method: 'POST' });
+        const data = await res.json();
+        if (data.key) {
+          input.value = data.key;
+          input.type = 'text';
+          showDialogPopup('새 API Key가 발급되었습니다. Flowise에서 업데이트해주세요.', { title: 'API Key 발급 완료' });
+        }
+      });
+    })();
+
     function showDialogPopup(message, options = {}) {
       return new Promise(resolve => {
         const popup = document.getElementById('dialogPopup');
@@ -464,24 +602,43 @@
         const cancel = document.getElementById('dialogCancel');
         const confirmMode = options.confirm === true;
 
-        title.textContent = options.title || (confirmMode ? '확인' : '알림');
+        const inputEl = document.getElementById('dialogInput');
+        const promptMode = options.prompt === true;
+
+        title.textContent = options.title || (confirmMode ? '확인' : (promptMode ? '입력' : '알림'));
         msg.textContent = message;
         ok.textContent = options.okText || '확인';
         cancel.textContent = options.cancelText || '취소';
-        cancel.style.display = confirmMode ? '' : 'none';
+        cancel.style.display = (confirmMode || promptMode) ? '' : 'none';
+
+        if (promptMode) {
+          inputEl.style.display = '';
+          inputEl.placeholder = options.placeholder || '';
+          inputEl.value = options.defaultValue || '';
+        } else {
+          inputEl.style.display = 'none';
+          inputEl.value = '';
+        }
+
         popup.style.display = 'flex';
+        if (promptMode) setTimeout(() => inputEl.focus(), 50);
 
         function close(result) {
           popup.style.display = 'none';
+          inputEl.style.display = 'none';
           ok.removeEventListener('click', onOk);
           cancel.removeEventListener('click', onCancel);
           popup.removeEventListener('click', onBackdrop);
           document.removeEventListener('keydown', onKeydown);
+          inputEl.removeEventListener('keydown', onInputKeydown);
           resolve(result);
         }
 
-        function onOk() { close(true); }
-        function onCancel() { close(false); }
+        function onOk() { close(promptMode ? (inputEl.value.trim() || null) : true); }
+        function onCancel() { close(promptMode ? null : false); }
+        function onInputKeydown(e) {
+          if (e.key === 'Enter') { e.preventDefault(); onOk(); }
+        }
         function onBackdrop(e) {
           if (e.target === popup) close(false);
         }
@@ -493,7 +650,8 @@
         cancel.addEventListener('click', onCancel);
         popup.addEventListener('click', onBackdrop);
         document.addEventListener('keydown', onKeydown);
-        ok.focus();
+        if (promptMode) inputEl.addEventListener('keydown', onInputKeydown);
+        if (!promptMode) ok.focus();
       });
     }
 
@@ -534,7 +692,6 @@
       return {
         slots: Array.from(document.querySelectorAll('.slot-card')).map((card, idx) => {
           const accountInputs = card.querySelectorAll('.naver-field input');
-          const cafeFields = card.querySelectorAll('.field-title + .input, .field-title + .input + .input');
           const postSelect = card.querySelector('.post-select');
           const mode = card.querySelector('.radio-row input:checked')?.parentElement?.textContent.trim() || '순차적';
           return {
@@ -543,12 +700,17 @@
             active: card.querySelector('.slot-head .switch input').checked,
             naverId: accountInputs[0]?.value || '',
             naverPw: accountInputs[1]?.value || '',
-            cafeUrl: cafeFields[0]?.textContent.trim() || '',
-            boardName: cafeFields[1]?.textContent.trim() || '',
+            username: accountInputs[2]?.value || '',
+            cafeUrl: card.querySelector('.cafe-url-input')?.value.trim() || '',
+            boardName: card.querySelector('.board-name-input')?.value.trim() || '',
             postId: parseInt(postSelect?.value || '1', 10),
             postTitle: postSelect?.selectedOptions[0]?.textContent.trim() || '',
             mode,
-            time: card.querySelector('.time-select')?.value || ''
+            time: card.querySelector('.time-select')?.value || '',
+            stages: Array.from(card.querySelectorAll('.stage-row')).map(row => ({
+              name: row.querySelector('.stage-name')?.value.trim() || '',
+              active: row.querySelector('.stage-active')?.checked || false,
+            })),
           };
         })
       };
@@ -562,14 +724,16 @@
         const activeInput = card.querySelector('.slot-head .switch input');
         const title = card.querySelector('.slot-head h3');
         const accountInputs = card.querySelectorAll('.naver-field input');
-        const cafeFields = card.querySelectorAll('.field-title + .input, .field-title + .input + .input');
         if (title && slot.name) title.textContent = slot.name;
         activeInput.checked = slot.active !== false;
         card.classList.toggle('disabled', !activeInput.checked);
         if (accountInputs[0]) accountInputs[0].value = slot.naverId || '';
         if (accountInputs[1]) accountInputs[1].value = slot.naverPw || '';
-        if (cafeFields[0] && slot.cafeUrl) cafeFields[0].textContent = slot.cafeUrl;
-        if (cafeFields[1] && slot.boardName) cafeFields[1].textContent = slot.boardName;
+        if (accountInputs[2]) accountInputs[2].value = slot.username || '';
+        const cafeUrlInput = card.querySelector('.cafe-url-input');
+        const boardNameInput = card.querySelector('.board-name-input');
+        if (cafeUrlInput) cafeUrlInput.value = slot.cafeUrl || '';
+        if (boardNameInput) boardNameInput.value = slot.boardName || '';
         const postSelect = card.querySelector('.post-select');
         if (postSelect && slot.postId) postSelect.value = String(slot.postId);
         card.querySelectorAll('.radio-row label').forEach(label => {
@@ -578,21 +742,30 @@
         });
         const timeSelect = card.querySelector('.time-select');
         if (timeSelect && slot.time) timeSelect.value = slot.time;
+        if (Array.isArray(slot.stages)) {
+          const stageRows = card.querySelectorAll('.stage-row');
+          slot.stages.forEach((s, si) => {
+            if (!stageRows[si]) return;
+            const nameInput = stageRows[si].querySelector('.stage-name');
+            const activeChk = stageRows[si].querySelector('.stage-active');
+            if (nameInput) nameInput.value = s.name || '';
+            if (activeChk) activeChk.checked = s.active === true;
+          });
+        }
       });
     }
 
     function applyPostData(data) {
       if (!data || !Array.isArray(data.posts)) return;
       data.posts.forEach(post => {
-        if (!post.exists) return;
         const card = document.querySelector(`.post-card[data-card-id="${post.id}"]`);
         if (!card) return;
         const titleInput = card.querySelector('.post-title');
         const summaryPreview = card.querySelector('.post-summary');
         titleInput.removeAttribute('readonly');
-        titleInput.value = post.title || '';
+        titleInput.value = post.exists ? (post.title || '') : '';
         titleInput.setAttribute('readonly', true);
-        summaryPreview.innerHTML = post.content || '';
+        summaryPreview.innerHTML = post.exists ? (post.content || '') : '';
       });
       syncPostSelectOptions();
     }
@@ -612,7 +785,7 @@
       btn.className = 'cafe-link-btn';
       btn.textContent = '바로가기';
       btn.addEventListener('click', () => {
-        const cafeUrl = normalizeCafeUrl(card.querySelector('.input.info')?.textContent);
+        const cafeUrl = normalizeCafeUrl(card.querySelector('.cafe-url-input')?.value);
         if (!cafeUrl) {
           showDialogPopup('이동할 카페 URL이 없습니다.', { title: '바로가기' });
           return;
@@ -853,7 +1026,7 @@
     renderCalendar();
 
     // 6. 슬롯 활성화/비활성화 토글
-    document.querySelectorAll('.slot-card .switch input[type=checkbox]').forEach(cb => {
+    document.querySelectorAll('.slot-card .slot-head .switch input[type=checkbox]').forEach(cb => {
       function applyState() {
         const slotCard = cb.closest('.slot-card');
         if (!slotCard) return;
@@ -958,6 +1131,11 @@
           this.value = '';
           return;
         }
+        if (file.size > 500 * 1024 * 1024) {
+          showDialogPopup('500MB 이하 동영상만 업로드할 수 있습니다.', { title: '업로드 실패' });
+          this.value = '';
+          return;
+        }
         const postId = currentCard.dataset.cardId;
         const originalText = document.getElementById('toolInsertVideo').textContent;
         document.getElementById('toolInsertVideo').disabled = true;
@@ -968,17 +1146,18 @@
           headers: { 'Content-Type': 'application/octet-stream' },
           body: file
         })
-          .then(response => {
-            if (!response.ok) throw new Error('동영상 업로드 실패');
-            return response.json();
+          .then(async response => {
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(data.error || '동영상 업로드 실패');
+            return data;
           })
           .then(data => {
             document.getElementById('editorVisual').focus();
             document.execCommand('insertHTML', false,
               `<video src="${data.url}" controls style="max-width:100%;border-radius:6px;margin:6px 0;"></video>`);
           })
-          .catch(() => {
-            showDialogPopup('동영상 업로드에 실패했습니다.', { title: '업로드 실패' });
+          .catch((err) => {
+            showDialogPopup(err.message || '동영상 업로드에 실패했습니다.', { title: '업로드 실패' });
           })
           .finally(() => {
             document.getElementById('toolInsertVideo').textContent = originalText;
@@ -987,9 +1166,49 @@
           });
       });
 
-      document.getElementById('toolInsertLink').addEventListener('click', () => {
-        const url = prompt('링크 URL을 입력하세요:');
-        if (url) document.execCommand('createLink', false, url);
+      document.getElementById('toolInsertLink').addEventListener('click', async () => {
+        const url = await showDialogPopup('링크 URL을 입력하세요:', {
+          title: '링크 삽입',
+          prompt: true,
+          placeholder: 'https://',
+        });
+        if (url) {
+          document.getElementById('editorVisual').focus();
+          document.execCommand('createLink', false, url);
+        }
+      });
+
+      document.getElementById('toolInsertYoutube').addEventListener('click', async () => {
+        const raw = await showDialogPopup('YouTube URL을 입력하세요:', {
+          title: 'YouTube 삽입',
+          prompt: true,
+          placeholder: 'https://youtu.be/... 또는 https://www.youtube.com/watch?v=...',
+        });
+        if (!raw) return;
+
+        let videoId = null;
+        try {
+          const u = new URL(raw.trim());
+          if (u.hostname === 'youtu.be') {
+            videoId = u.pathname.replace(/^\//, '').split(/[?&]/)[0];
+          } else if (u.hostname.includes('youtube.com')) {
+            videoId = u.searchParams.get('v');
+          }
+        } catch (_) { /* invalid URL */ }
+
+        if (!videoId) {
+          showDialogPopup('올바른 YouTube URL이 아닙니다.', { title: 'YouTube 삽입' });
+          return;
+        }
+
+        const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+        document.getElementById('editorVisual').focus();
+        document.execCommand('insertHTML', false,
+          `<div class="yt-embed" contenteditable="false" style="position:relative;padding-bottom:56.25%;height:0;margin:10px 0;border-radius:10px;overflow:hidden;">` +
+          `<iframe src="${embedUrl}" frameborder="0" allowfullscreen allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" ` +
+          `style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:10px;"></iframe>` +
+          `</div>`
+        );
       });
 
 
@@ -1054,6 +1273,9 @@
           titleInput.value = '';
           titleInput.setAttribute('readonly', true);
           summaryPreview.innerHTML = '';
+          const checkbox = currentCard.querySelector('.post-switch input');
+          if (checkbox) checkbox.checked = false;
+          currentCard.classList.add('post-card-disabled');
           document.getElementById('editorTitleInput').value = '';
           document.getElementById('editorVisual').innerHTML = '';
           document.getElementById('editorSource').value = '';
@@ -1061,6 +1283,11 @@
           savedContent = '';
           showVisualTab();
           syncPostSelectOptions();
+          await fetch('/api/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(collectPostConfig())
+          });
           this.textContent = '초기화 완료 ✓';
           setTimeout(() => {
             this.textContent = originalText;
@@ -1093,6 +1320,79 @@
 
       document.getElementById('editorClose').addEventListener('click', () => {
         document.getElementById('editorModal').style.display = 'none';
+      });
+    })();
+
+    // ── 게시 실행 ─────────────────────────────────────────────────────────────
+    (function () {
+      document.querySelectorAll('.run-slot-btn').forEach(btn => {
+        btn.addEventListener('click', async function () {
+          const slotId = this.dataset.slot;
+          const originalText = this.textContent;
+
+          // 슬롯 카드에서 라이브 입력값 수집
+          const card = this.closest('.slot-card');
+          const accountInputs = card.querySelectorAll('.naver-field input');
+          const naverId   = accountInputs[0]?.value.trim() || '';
+          const naverPw   = accountInputs[1]?.value || '';
+          const username  = accountInputs[2]?.value.trim() || '';
+          const cafeUrl   = card.querySelector('.cafe-url-input')?.value.trim() || '';
+          const boardName = card.querySelector('.board-name-input')?.value.trim() || '';
+
+          // 선택된 콘텐츠 소스에서 제목/본문 수집
+          const postId    = card.querySelector('.post-select')?.value || '1';
+          const postCard  = document.querySelector(`.post-card[data-card-id="${postId}"]`);
+          const postTitle   = postCard?.querySelector('.post-title')?.value.trim() || '';
+          const htmlContent = postCard?.querySelector('.post-summary')?.innerHTML || '';
+
+          this.disabled = true;
+          this.textContent = '게시 중...';
+          this.classList.add('running');
+
+          try {
+            const res = await fetch(`/api/run-slot/${slotId}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ naverId, naverPw, username, cafeUrl, boardName, postTitle, htmlContent }),
+            });
+            const data = await res.json();
+
+            if (!res.ok) {
+              const logText = Array.isArray(data.log) ? '\n\n── 로그 ──\n' + data.log.join('\n') : '';
+              showDialogPopup((data.error || '게시에 실패했습니다.') + logText, {
+                title: `슬롯 #${slotId} 게시 실패`,
+              });
+              return;
+            }
+
+            const linkHtml = data.url
+              ? `<br><a href="${data.url}" target="_blank" rel="noopener" style="color:#4c7f62;word-break:break-all;">${data.url}</a>`
+              : '';
+            const popup = document.getElementById('dialogPopup');
+            document.getElementById('dialogTitle').textContent = `슬롯 #${slotId} 게시 완료`;
+            document.getElementById('dialogMessage').innerHTML =
+              `카페에 성공적으로 게시되었습니다.${linkHtml}`;
+            document.getElementById('dialogCancel').style.display = 'none';
+            document.getElementById('dialogOk').textContent = '확인';
+            document.getElementById('dialogInput').style.display = 'none';
+            popup.style.display = 'flex';
+
+            const ok = document.getElementById('dialogOk');
+            const close = () => {
+              popup.style.display = 'none';
+              ok.removeEventListener('click', close);
+            };
+            ok.addEventListener('click', close);
+          } catch (err) {
+            showDialogPopup('네트워크 오류가 발생했습니다: ' + err.message, {
+              title: `슬롯 #${slotId} 게시 오류`,
+            });
+          } finally {
+            this.disabled = false;
+            this.textContent = originalText;
+            this.classList.remove('running');
+          }
+        });
       });
     })();
   </script>

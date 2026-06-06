@@ -35,7 +35,7 @@ async function detectLoginState(page) {
     return { ok: true, status: 'logged_in' };
   }
 
-  if (/아이디 또는 비밀번호|로그인 정보가 올바르지/i.test(bodyText)) {
+  if (/아이디.*비밀번호.*잘못|비밀번호가\s*잘못|로그인 정보가 올바르지|정확히 입력/i.test(bodyText)) {
     return { ok: false, status: 'login_failed', reason: 'invalid_credentials' };
   }
 

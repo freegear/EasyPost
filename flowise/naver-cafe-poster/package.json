@@ -1,0 +1,13 @@
+{
+  "name": "naver-cafe-poster",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "playwright": "1.60.0"
+  }
+}

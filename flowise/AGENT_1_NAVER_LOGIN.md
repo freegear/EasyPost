@@ -100,9 +100,11 @@ If login succeeds, report that the Naver browser session has been saved.
 Login:
 
 ```bash
-curl -X POST http://localhost:3010/login \
-  -H 'Content-Type: application/json' \
-  -d '{"username":"NAVER_ID","password":"NAVER_PASSWORD"}'
+docker exec flowise node -e "fetch('http://naver-login-agent:3010/login', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ username: 'NAVER_ID', password: 'NAVER_PASSWORD' })
+}).then(r => r.text()).then(console.log)"
 ```
 
 The service is not exposed to the host by default. It is intended to be called by Flowise over the `easypost` Docker network.

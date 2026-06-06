@@ -3,6 +3,7 @@ const { Pool } = require('pg');
 const session = require('express-session');
 const path = require('path');
 const fs = require('fs/promises');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = 3000;
@@ -18,8 +19,8 @@ const pool = new Pool({
   database: 'EasyPost_USER',
 });
 
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({ limit: '500mb' }));
+app.use(express.urlencoded({ extended: true, limit: '500mb' }));
 app.use(session({
   secret: process.env.SESSION_SECRET || 'easypost-secret-key',
   resave: false,
@@ -33,6 +34,73 @@ const HTML_DIR = path.join(__dirname, 'html');
 function requireLogin(req, res, next) {
   if (req.session && req.session.user) return next();
   res.redirect('/');
+}
+
+// ── API Key 관리 ──────────────────────────────────────────────────────────────
+
+function getApiKeysPath() {
+  return path.join(DATA_DIR, 'apikeys.json');
+}
+
+async function getApiKeyMap() {
+  try {
+    const raw = await fs.readFile(getApiKeysPath(), 'utf8');
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
+}
+
+async function saveApiKeyMap(map) {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+  await fs.writeFile(getApiKeysPath(), JSON.stringify(map, null, 2) + '\n', 'utf8');
+}
+
+async function findUserByApiKey(key) {
+  const map = await getApiKeyMap();
+  return map[String(key)] || null;
+}
+
+async function getUserApiKey(username) {
+  const map = await getApiKeyMap();
+  for (const [k, u] of Object.entries(map)) {
+    if (u === username) return k;
+  }
+  return null;
+}
+
+async function generateApiKey(username) {
+  const map = await getApiKeyMap();
+  // 기존 키 삭제
+  for (const [k, u] of Object.entries(map)) {
+    if (u === username) delete map[k];
+  }
+  const key = crypto.randomBytes(32).toString('hex');
+  map[key] = username;
+  await saveApiKeyMap(map);
+  return key;
+}
+
+// 세션 OR API Key 모두 허용하는 미들웨어
+async function requireApiKeyOrLogin(req, res, next) {
+  if (req.session && req.session.user) return next();
+
+  const key = req.headers['x-api-key'];
+  if (key) {
+    const username = await findUserByApiKey(key);
+    if (username) {
+      req.apiUser = { username, id: username };
+      return next();
+    }
+    return res.status(401).json({ error: '유효하지 않은 API Key입니다.' });
+  }
+
+  res.status(401).json({ error: '인증이 필요합니다. 로그인하거나 X-Api-Key 헤더를 사용하세요.' });
+}
+
+// req.session.user 또는 req.apiUser를 반환하는 헬퍼
+function getReqUser(req) {
+  return req.session.user || req.apiUser;
 }
 
 function normalizeConfig(config) {
@@ -53,12 +121,19 @@ function normalizeConfig(config) {
       active: slot.active !== false,
       naverId: String(slot.naverId || ''),
       naverPw: String(slot.naverPw || ''),
+      username: String(slot.username || ''),
       cafeUrl: String(slot.cafeUrl || ''),
       boardName: String(slot.boardName || ''),
       postId: Number.parseInt(slot.postId, 10) || 1,
       postTitle: String(slot.postTitle || ''),
       mode: String(slot.mode || '순차적'),
       time: String(slot.time || ''),
+      stages: Array.isArray(slot.stages)
+        ? slot.stages.slice(0, 4).map(s => ({
+            name: String(s.name || ''),
+            active: s.active === true,
+          }))
+        : Array.from({ length: 4 }, () => ({ name: '', active: false })),
     })),
   };
 }
@@ -271,6 +346,38 @@ app.get('/api/me', requireLogin, (req, res) => {
   res.json({ username: req.session.user.username, id: req.session.user.id });
 });
 
+// API Key 조회
+app.get('/api/apikey', requireLogin, async (req, res) => {
+  const key = await getUserApiKey(req.session.user.username);
+  res.json({ key });
+});
+
+// API Key 생성 / 재생성
+app.post('/api/apikey', requireLogin, async (req, res) => {
+  try {
+    await ensureUserData(req.session.user);
+    const key = await generateApiKey(req.session.user.username);
+    res.json({ key });
+  } catch (err) {
+    console.error('API key generate error:', err);
+    res.status(500).json({ error: 'API Key 생성에 실패했습니다.' });
+  }
+});
+
+// API Key 삭제 (비활성화)
+app.delete('/api/apikey', requireLogin, async (req, res) => {
+  try {
+    const map = await getApiKeyMap();
+    for (const [k, u] of Object.entries(map)) {
+      if (u === req.session.user.username) delete map[k];
+    }
+    await saveApiKeyMap(map);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'API Key 삭제에 실패했습니다.' });
+  }
+});
+
 app.get('/api/config', requireLogin, async (req, res) => {
   try {
     await ensureUserData(req.session.user);
@@ -375,6 +482,13 @@ app.post('/api/posts/:id/assets', requireLogin, express.raw({
   }
 });
 
+app.use((err, req, res, next) => {
+  if (err && err.type === 'entity.too.large') {
+    return res.status(413).json({ error: '파일이 너무 큽니다. 500MB 이하 파일만 업로드할 수 있습니다.' });
+  }
+  next(err);
+});
+
 app.post('/api/posts/:id', requireLogin, async (req, res) => {
   const id = Number.parseInt(req.params.id, 10);
   if (!Number.isInteger(id) || id < 1 || id > POST_COUNT) {
@@ -426,6 +540,128 @@ app.delete('/api/posts', requireLogin, async (req, res) => {
   } catch (err) {
     console.error('Posts reset error:', err);
     res.status(500).json({ error: '게시글 파일을 초기화하지 못했습니다.' });
+  }
+});
+
+// ── Playwright 포스팅 실행 ─────────────────────────────────────────────────
+
+function getSessionDir(user) {
+  return path.join(getUserDir(user), 'sessions');
+}
+
+function getSessionPath(user, slotId) {
+  return path.join(getSessionDir(user), `slot_${slotId}.json`);
+}
+
+app.post('/api/run-slot/:slotId', requireApiKeyOrLogin, async (req, res) => {
+  const user   = getReqUser(req);
+  const slotId = Number.parseInt(req.params.slotId, 10);
+  if (!Number.isInteger(slotId) || slotId < 1 || slotId > 4) {
+    return res.status(400).json({ error: '슬롯 번호가 올바르지 않습니다. (1~4)' });
+  }
+
+  const body = req.body || {};
+  let naverId, naverPw, username, cafeUrl, boardName, postTitle, postContent;
+
+  if (body.naverId) {
+    // 프론트엔드에서 라이브 입력값 직접 전달
+    naverId     = body.naverId;
+    naverPw     = body.naverPw     || '';
+    username    = body.username    || '';
+    cafeUrl     = body.cafeUrl     || '';
+    boardName   = body.boardName   || '';
+    postTitle   = body.postTitle   || '';
+    postContent = body.htmlContent || '';
+
+    if (!naverId)                         return res.status(400).json({ error: 'NAVER ID가 설정되지 않았습니다.' });
+    if (!naverPw)                         return res.status(400).json({ error: 'NAVER 비밀번호가 설정되지 않았습니다.' });
+    if (!cafeUrl || cafeUrl.includes('...')) return res.status(400).json({ error: '카페 URL이 설정되지 않았습니다.' });
+  } else {
+    // body 없으면 저장된 config 파일에서 읽기 (기존 방식)
+    let config;
+    try {
+      await ensureUserData(user);
+      const raw = await fs.readFile(getConfigPath(user), 'utf8');
+      config = normalizeConfig(JSON.parse(raw));
+    } catch (err) {
+      return res.status(500).json({ error: '설정을 불러오지 못했습니다.' });
+    }
+
+    const slot = config.slots[slotId - 1];
+    if (!slot)          return res.status(404).json({ error: '슬롯을 찾을 수 없습니다.' });
+    if (!slot.active)   return res.status(400).json({ error: '비활성화된 슬롯입니다.' });
+    if (!slot.naverId)  return res.status(400).json({ error: 'NAVER ID가 설정되지 않았습니다.' });
+    if (!slot.naverPw)  return res.status(400).json({ error: 'NAVER 비밀번호가 설정되지 않았습니다.' });
+    if (!slot.cafeUrl || slot.cafeUrl.includes('...'))
+      return res.status(400).json({ error: '카페 URL이 설정되지 않았습니다.' });
+
+    naverId   = slot.naverId;
+    naverPw   = slot.naverPw;
+    username  = slot.username  || '';
+    cafeUrl   = slot.cafeUrl;
+    boardName = slot.boardName || '';
+
+    const postId       = slot.postId || 1;
+    const postFilePath = path.join(getPostDir(user, postId), 'index.html');
+    postTitle   = `Post #${postId}`;
+    postContent = '';
+    try {
+      const raw       = await fs.readFile(postFilePath, 'utf8');
+      const extracted = extractSavedPost(raw, postId);
+      postTitle   = extracted.title   || postTitle;
+      postContent = extracted.content || '';
+    } catch (err) {
+      if (err.code === 'ENOENT') return res.status(404).json({ error: `Post #${postId} 게시글 내용이 없습니다.` });
+      return res.status(500).json({ error: '게시글을 불러오지 못했습니다.' });
+    }
+  }
+
+  // 세션 디렉토리 준비
+  const sessionDir = getSessionDir(user);
+  await fs.mkdir(sessionDir, { recursive: true });
+  const sessionPath = getSessionPath(user, slotId);
+
+  let NaverCafePoster;
+  try {
+    NaverCafePoster = require('./playwright/naver');
+  } catch (err) {
+    return res.status(500).json({ error: 'Playwright 모듈을 로드하지 못했습니다. 컨테이너를 재시작해주세요.' });
+  }
+
+  const poster = new NaverCafePoster({
+    naverId,
+    naverPw,
+    cafeUrl,
+    boardName,
+    username,
+    sessionPath,
+  });
+
+  try {
+    await poster.launch();
+    await poster.ensureLogin();
+    const result = await poster.post({ title: postTitle, htmlContent: postContent });
+    res.json({ success: true, url: result.url, log: poster.log });
+  } catch (err) {
+    console.error(`Run-slot #${slotId} error:`, err.message);
+    res.status(500).json({ error: err.message, log: poster.log });
+  } finally {
+    await poster.close();
+  }
+});
+
+// 네이버 로그인 세션 초기화
+app.delete('/api/run-slot/:slotId/session', requireApiKeyOrLogin, async (req, res) => {
+  const user   = getReqUser(req);
+  const slotId = Number.parseInt(req.params.slotId, 10);
+  if (!Number.isInteger(slotId) || slotId < 1 || slotId > 4) {
+    return res.status(400).json({ error: '슬롯 번호가 올바르지 않습니다.' });
+  }
+  try {
+    await fs.rm(getSessionPath(user, slotId), { force: true });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: '세션 삭제에 실패했습니다.' });
   }
 });
 

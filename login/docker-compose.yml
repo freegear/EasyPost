@@ -13,6 +13,7 @@ services:
       - SESSION_SECRET=${SESSION_SECRET:-easypost-secret-key}
       - DATA_DIR=/app/data
     volumes:
+      - ./server.js:/app/server.js:ro
       - ../html:/app/html:ro
       - ../css:/app/css:ro
       - ../data:/app/data
