@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>EasyPost</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
   <link rel="stylesheet" href="/css/style.css?v=2"/>
 </head>
 <body>
@@ -13,6 +14,8 @@
         <img class="brand-logo" src="/easypost-logo.svg" alt="EasyPost">
       </div>
       <div class="user-menu-wrapper">
+        <span class="session-timer-label">로그인 유지 시간</span>
+        <span class="session-timer" id="sessionTimer">60:00</span>
         <div class="user" id="userMenuBtn">
           <span>개인 사용자:</span>
           <div class="avatar"></div>
@@ -35,17 +38,6 @@
             <div class="drop-item drop-logout" id="logoutBtn">
               <span class="drop-icon">&#8617;</span>
               <span>로그아웃</span>
-            </div>
-          </div>
-          <div class="drop-apikey-section">
-            <div class="drop-apikey-label">
-              <span>&#128273; Flowise API Key</span>
-              <button class="apikey-regen-btn" id="apikeyRegenBtn" title="새 Key 발급">&#8635;</button>
-            </div>
-            <div class="apikey-row">
-              <input class="apikey-input" id="apikeyValue" type="password" readonly placeholder="발급 전">
-              <button class="apikey-eye-btn" id="apikeyEyeBtn" title="보기/숨기기">&#128065;</button>
-              <button class="apikey-copy-btn" id="apikeyCopyBtn" title="복사">&#128203;</button>
             </div>
           </div>
         </div>
@@ -561,14 +553,37 @@
         return response;
       };
 
-      setInterval(() => {
-        if (!document.hidden) {
-          window.fetch('/api/me', { cache: 'no-store' }).catch(() => {});
-        }
-      }, 60 * 1000);
     })();
 
     // 1. 로그인 사용자 ID + 드롭다운 정보 설정
+    let sessionExpiresAt = Date.now() + (60 * 60 * 1000);
+    let sessionLogoutStarted = false;
+
+    function updateSessionTimer() {
+      const remainingSeconds = Math.max(0, Math.ceil((sessionExpiresAt - Date.now()) / 1000));
+      const minutes = Math.floor(remainingSeconds / 60);
+      const seconds = remainingSeconds % 60;
+      document.getElementById('sessionTimer').textContent =
+        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      if (remainingSeconds === 0 && !sessionLogoutStarted) {
+        sessionLogoutStarted = true;
+        fetch('/logout', { method: 'POST' }).finally(() => window.location.replace('/'));
+      }
+    }
+
+    function resetSessionTimer() {
+      sessionExpiresAt = Date.now() + (60 * 60 * 1000);
+      updateSessionTimer();
+      fetch('/api/session/touch', { method: 'POST' })
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (data?.sessionRemainingSeconds) {
+            sessionExpiresAt = Date.now() + (data.sessionRemainingSeconds * 1000);
+          }
+        })
+        .catch(() => {});
+    }
+
     fetch('/api/me')
       .then(r => r.json())
       .then(d => {
@@ -576,8 +591,15 @@
         document.getElementById('dropName').textContent = d.username;
         const initial = d.username.charAt(0).toUpperCase();
         document.getElementById('dropAvatar').textContent = initial;
+        sessionExpiresAt = Date.now() + ((d.sessionRemainingSeconds || 3600) * 1000);
+        updateSessionTimer();
       })
       .catch(() => {});
+
+    setInterval(updateSessionTimer, 1000);
+    document.addEventListener('pointerdown', event => {
+      if (!event.target.closest('#logoutBtn')) resetSessionTimer();
+    }, true);
 
     function escapeLogText(value) {
       return String(value || '').replace(/[&<>"']/g, char => ({
@@ -652,51 +674,6 @@
       fetch('/logout', { method: 'POST' })
         .then(() => { window.location.href = '/'; });
     });
-
-    // ── API Key 관리 ────────────────────────────────────────────────────────
-    (function () {
-      const input  = document.getElementById('apikeyValue');
-      const eyeBtn = document.getElementById('apikeyEyeBtn');
-      const copyBtn = document.getElementById('apikeyCopyBtn');
-      const regenBtn = document.getElementById('apikeyRegenBtn');
-
-      // 페이지 로드 시 현재 키 조회
-      fetch('/api/apikey')
-        .then(r => r.json())
-        .then(d => { if (d.key) input.value = d.key; });
-
-      // 보기/숨기기 토글
-      eyeBtn.addEventListener('click', () => {
-        input.type = input.type === 'password' ? 'text' : 'password';
-      });
-
-      // 클립보드 복사
-      copyBtn.addEventListener('click', async () => {
-        if (!input.value) return;
-        try {
-          await navigator.clipboard.writeText(input.value);
-          const orig = copyBtn.textContent;
-          copyBtn.textContent = '✔';
-          setTimeout(() => { copyBtn.textContent = orig; }, 1500);
-        } catch { /* 구형 브라우저 fallback */ }
-      });
-
-      // 새 Key 발급
-      regenBtn.addEventListener('click', async () => {
-        const ok = await showDialogPopup(
-          '기존 API Key는 즉시 무효화됩니다. 새로 발급할까요?',
-          { title: 'API Key 재발급', confirm: true }
-        );
-        if (!ok) return;
-        const res = await fetch('/api/apikey', { method: 'POST' });
-        const data = await res.json();
-        if (data.key) {
-          input.value = data.key;
-          input.type = 'text';
-          showDialogPopup('새 API Key가 발급되었습니다. Flowise에서 업데이트해주세요.', { title: 'API Key 발급 완료' });
-        }
-      });
-    })();
 
     function showDialogPopup(message, options = {}) {
       return new Promise(resolve => {
@@ -828,6 +805,13 @@
           active: card.querySelector('.post-switch input')?.checked !== false,
         })),
       };
+    }
+
+    function hasDuplicatePostingTimes(config) {
+      const activeTimes = config.slots
+        .filter(slot => slot.active && slot.time)
+        .map(slot => slot.time);
+      return new Set(activeTimes).size !== activeTimes.length;
     }
 
     function applySlotConfig(config) {
@@ -1025,17 +1009,25 @@
     // 3. 설정 저장 버튼
     document.getElementById('saveBtn').addEventListener('click', async function() {
       const originalText = this.textContent;
+      const config = collectSlotConfig();
+      const duplicatePostingTimes = hasDuplicatePostingTimes(config);
       this.disabled = true;
       this.textContent = '저장 중...';
       try {
         const response = await fetch('/api/config', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(collectSlotConfig())
+          body: JSON.stringify(config)
         });
         if (!response.ok) throw new Error('설정 저장 실패');
         this.textContent = '저장 완료 ✓';
         this.classList.add('saved');
+        if (duplicatePostingTimes) {
+          showDialogPopup(
+            '게시글의 시간이 중복되어 있습니다.\n게시글 작성시 오류가 발생할 수 있습니다.',
+            { title: '게시 시간 중복 안내' }
+          );
+        }
         setTimeout(() => {
           this.textContent = originalText;
           this.classList.remove('saved');
@@ -1155,6 +1147,12 @@
       renderCalendar();
     });
     renderCalendar();
+
+    function showLatestPostingLogs() {
+      selYear = null; selMonth = null; selDay = null;
+      renderCalendar();
+      loadPostingLogs('');
+    }
 
     // 6. 슬롯 활성화/비활성화 토글
     document.querySelectorAll('.slot-card .slot-head .switch input[type=checkbox]').forEach(cb => {
@@ -1481,6 +1479,7 @@
             const data = await res.json();
 
             if (!res.ok) {
+              showLatestPostingLogs();
               const logText = Array.isArray(data.log) ? '\n\n── 로그 ──\n' + data.log.join('\n') : '';
               showDialogPopup((data.error || '게시에 실패했습니다.') + logText, {
                 title: `슬롯 #${slotId} 게시 실패`,
@@ -1490,8 +1489,12 @@
 
             if (data.nextPostId) {
               const postSelect = this.closest('.slot-card')?.querySelector('.post-select');
-              if (postSelect) postSelect.value = String(data.nextPostId);
+              if (postSelect) {
+                postSelect.value = String(data.nextPostId);
+                postSelect.dispatchEvent(new Event('change', { bubbles: true }));
+              }
             }
+            showLatestPostingLogs();
 
             const linkHtml = data.url
               ? `<br><a href="${data.url}" target="_blank" rel="noopener" style="color:#4c7f62;word-break:break-all;">${data.url}</a>`

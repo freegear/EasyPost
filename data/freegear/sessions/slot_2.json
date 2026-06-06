@@ -25,7 +25,7 @@
       "value": "PC-MEDIA-NEWSSTAND",
       "domain": "www.naver.com",
       "path": "/",
-      "expires": 1781382607,
+      "expires": 1781388252,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
@@ -35,7 +35,7 @@
       "value": "1",
       "domain": ".nid.naver.com",
       "path": "/",
-      "expires": 1812313806,
+      "expires": 1812319450,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
@@ -55,7 +55,7 @@
       "value": "MQOMSA3GHISGU",
       "domain": ".naver.com",
       "path": "/",
-      "expires": 1815337808.209553,
+      "expires": 1815343452.821329,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
@@ -81,38 +81,38 @@
       "sameSite": "Lax"
     },
     {
-      "name": "NID_JST",
-      "value": "vmvxAU4twS7x8w/zkNLSoU4R6QxPQYCX0QIjZmvJM9xch1oGqefsfyQBTf/l+Eb9UkkUsyXZBOcjVdmiNvkoBr9BZnzFyUjhK0VLUG5v57S/Sytb1L7qAz7mrRgrY+4iiZWfb28WyXo8beh9x2RtxIb1ZbcEhNzbn8Mfqajo2f4=",
-      "domain": ".nid.naver.com",
-      "path": "/",
-      "expires": 1798057806.075317,
-      "httpOnly": true,
-      "secure": true,
-      "sameSite": "Lax"
-    },
-    {
       "name": "SRT30",
-      "value": "1780777806",
+      "value": "1780781403",
       "domain": ".naver.com",
       "path": "/",
-      "expires": 1780779608.209601,
+      "expires": 1780785252.821412,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "SRT5",
-      "value": "1780777806",
+      "value": "1780783221",
       "domain": ".naver.com",
       "path": "/",
-      "expires": 1780778108.209635,
+      "expires": 1780783752.821451,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
     },
     {
+      "name": "NID_JST",
+      "value": "8qS+s8wSxFMsQais1/WF9lxniJ4o41NXmN4lOpjCcxiDpIuyKUkUecb+2zaYUTMXojx57RpvUesgCqqua1xFgeJMw7YFyb8AxwIGh61Fbq9pB6z0NeVdwvvIPf/brlm9+69BWbTKXkfXezitQGQxNW+9pyfhTdtI8c7/mTbYAJk=",
+      "domain": ".nid.naver.com",
+      "path": "/",
+      "expires": 1798063450.572336,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
       "name": "nid_inf",
-      "value": "-1186315181",
+      "value": "-1186658298",
       "domain": ".naver.com",
       "path": "/",
       "expires": -1,
@@ -122,7 +122,7 @@
     },
     {
       "name": "NID_AUT",
-      "value": "PX4u9S1LFmPyNj9Pey189WEmuA3cFU3Ydmm2X8yrr7Fk1y2lJ9w6/9L31t9s7DZt",
+      "value": "7AwONNxTzz+pH4lspC2dYe1i5UjeQ1uYBOXzQY6IvYpQgu0lJcRNRxHb6Pw27VAO",
       "domain": ".naver.com",
       "path": "/",
       "expires": -1,
@@ -132,7 +132,7 @@
     },
     {
       "name": "NID_SES",
-      "value": "AAABh9aZBSa/GwdlZGAO9Rm2GioDAwRaTQFI18a3sfOERj2XZpvqUNJ35BRu8OLlYMvr4KLJbOwBlxcU/Op0H4q+pGjYxE1jV4tnQBbnLamQ27L/khO+nBGtIklVETBJBD11gtoXXmagNpQ66QbJV9niat7OCRCBSda6ORppht+FMwtgDrw3eHyu0eNQu/Auwokz+2GilcCjHm2ZdSNawqVVE4J+96VIbXN48/p1g+XltbpNgQ4bNCr3N63z/BHKqrkMnOn6eva+LYCxMjTyI/9hyfuGFBZZOSoBjTagdVzAtlKjcvikJ3BGdPG8guQjSVty12srugvO+vaQCTz9AxikGSJcQPPkExLuAcPhOECDN3EsKwZz5u8UX3Fn9OgnfKRfnpB53CcAfTU3sXhV6jJg446Y3HOu9/BsPTV8IrkA7wYkJQGhkekwJ1UdclOqqqxrK2B6aW9CT9RJGFhfg35dOUqgkuWM2MoRUEUrFqkyE9CUlnT98Cy7JPnZ4U1L9ajNX24eIm1/7FFqY7ObGxkVLlo=",
+      "value": "AAABhBP0W6t9IGaGsj5cS7mvcdYdVCY54hz/p7SaFQP5mAevjerqZRwJQVumoCntJYMtvI5uOYww64EB86CkbIYLxcRFodurLJTKKpOLhRQxgc7FgcceTV+F7vKLWbghU6NC2z2zsT+YcqGlb+8INcwnWK2VIIuwdJ+Vby/WGj/jwL34fBlWfspeysoVrPX/CVs+Fk54TcEV+wyymocXGOVzdFrqQb/D0gQXzCdnGB+NXCX/I2gUEhQAdbexIc4HycUrfP15J2SZLLuHENSaBouXBZFbIAH4TZZbTcbGqpWx1Tiah/J4fkOHZ95kg6OqHMeO6YB1Q3Z1M8GXM0PeO4/qzBE+q+dncEtg7OO2rorurOmpddfOC3y4fhGJdU5o3Ksw4DtyuXmTP3+qI60SgmFg/uLx7Y8IEPqFpnGMzzAai1Kvv+6VSryQfn4kPr6UEDoPy3Jv4WdwsUEr11RF2kvhkjgTth99d68WI2jnXnkmkQ6NXK5+1MT8k1jNawM5T61BNLFzKmmcOutgPmxtfFJbD1s=",
       "domain": ".naver.com",
       "path": "/",
       "expires": -1,
@@ -142,10 +142,10 @@
     },
     {
       "name": "BUC",
-      "value": "-dm1u_hXT43BXjp81hnfF20KNefsGUl7IDCKomX5ipI=",
+      "value": "eYLMk5DNdoDV_49KmCI4hH9zhsU8SBYik3eu3I47ATg=",
       "domain": ".naver.com",
       "path": "/",
-      "expires": 1815337808.209668,
+      "expires": 1815343452.821483,
       "httpOnly": true,
       "secure": true,
       "sameSite": "None"

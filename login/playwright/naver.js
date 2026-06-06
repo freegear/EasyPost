@@ -28,6 +28,7 @@ class NaverCafePoster {
     this.context = null;
     this.page    = null;
     this.log     = [];
+    this.dialogMessages = [];
   }
 
   _log(msg) {
@@ -64,6 +65,12 @@ class NaverCafePoster {
     });
 
     this.page = await this.context.newPage();
+    this.page.on('dialog', async dialog => {
+      const message = dialog.message();
+      this.dialogMessages.push(message);
+      this._log(`네이버 알림: ${message}`);
+      await dialog.accept().catch(() => {});
+    });
     this._log('브라우저 초기화 완료');
   }
 
@@ -487,11 +494,24 @@ class NaverCafePoster {
     for (let i = 0; i < 30; i++) {
       await this.page.waitForTimeout(500);
       postedUrl = this.page.url();
-      if (!postedUrl.includes('/write')) break;
+      if (this._isPostedArticleUrl(postedUrl)) break;
+    }
+
+    if (!this._isPostedArticleUrl(postedUrl)) {
+      const alertMessage = this.dialogMessages.at(-1);
+      const detail = alertMessage ? ` 네이버 알림: ${alertMessage}` : '';
+      throw new Error(`게시 완료를 확인하지 못했습니다. 이동된 주소: ${postedUrl}.${detail}`);
     }
 
     this._log(`게시 완료: ${postedUrl}`);
     return { url: postedUrl };
+  }
+
+  _isPostedArticleUrl(url) {
+    return /ArticleRead\.nhn/i.test(url)
+      || /\/cafes\/\d+\/articles\/\d+/i.test(url)
+      || /cafe\.naver\.com\/[^/?#]+\/\d+(?:[/?#]|$)/i.test(url)
+      || /[?&]articleid=\d+/i.test(url);
   }
 
   // ─── 정리 ──────────────────────────────────────────────────────────────────

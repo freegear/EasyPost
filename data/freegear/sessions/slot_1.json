@@ -15,7 +15,7 @@
       "value": "1",
       "domain": ".nid.naver.com",
       "path": "/",
-      "expires": 1812297618,
+      "expires": 1812317403,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
@@ -45,7 +45,7 @@
       "value": "ABTXKAIM6YRWU",
       "domain": ".naver.com",
       "path": "/",
-      "expires": 1815321620.730275,
+      "expires": 1815341406.118402,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
@@ -55,7 +55,7 @@
       "value": "PC-MEDIA-NEWSSTAND",
       "domain": "www.naver.com",
       "path": "/",
-      "expires": 1781366419,
+      "expires": 1781386205,
       "httpOnly": false,
       "secure": false,
       "sameSite": "Lax"
@@ -82,37 +82,37 @@
     },
     {
       "name": "NID_JST",
-      "value": "PAdbB4/mhd5ry/vCGta5sEE/lX9MO58ku+XtxlvJ6PZtRJGy4ch0V6jqv685HRlGykgYC//JDa02fmQZY00Evr9fE24oG2xW9jpb66c0B122z/8M5c2EZH/t4uhuOCMEtpNiIHNGFWyaE8x/TDE6Tqfx34pSY7Yrq+1b0fKbwdU=",
+      "value": "GbY0VY8IU0lTaabtp2p3cwEztOBqnOnhqC1LuBCqPfyRVfv3SQbW4oyat+oIWAkyaiHVB49xFajIfBjzxbJOYMgodabH8MJGo0o9lI0IE4wcATR0GDeozNbin/3CStc+1AJ78vaRObycovnxFz/gBzZUZrapt1fQB2zkSUWTjdQ=",
       "domain": ".nid.naver.com",
       "path": "/",
-      "expires": 1798041618.135976,
+      "expires": 1798061403.349058,
       "httpOnly": true,
       "secure": true,
       "sameSite": "Lax"
     },
     {
       "name": "SRT30",
-      "value": "1780761619",
+      "value": "1780781404",
       "domain": ".naver.com",
       "path": "/",
-      "expires": 1780763420.730443,
+      "expires": 1780783206.118568,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "SRT5",
-      "value": "1780761619",
+      "value": "1780781404",
       "domain": ".naver.com",
       "path": "/",
-      "expires": 1780761920.730532,
+      "expires": 1780781706.118655,
       "httpOnly": false,
       "secure": true,
       "sameSite": "None"
     },
     {
       "name": "nid_inf",
-      "value": "-1186256268",
+      "value": "-1186650031",
       "domain": ".naver.com",
       "path": "/",
       "expires": -1,
@@ -122,7 +122,7 @@
     },
     {
       "name": "NID_AUT",
-      "value": "lTF5eO7Jm/C51BrxR3irt6Vm/FhwgVqcPEVVSDEa6d8HHDZf9mBHCkRuTqeThf8e",
+      "value": "mdtQBOEU2a6fnoLbJZ6qt+9qnpDlu7h6IJ5RdV2vMEwxGD/91wFnacvB0TSamT4L",
       "domain": ".naver.com",
       "path": "/",
       "expires": -1,
@@ -132,7 +132,7 @@
     },
     {
       "name": "NID_SES",
-      "value": "AAABi8j1bnw76UQ9nTB1vSSeBfKWTIbGf11ZupomQ0d5Tc6Nxx1w4DSw39qeqEjlSW+UF+yFPXA+g+0GNzc+IX2JcuVe/RqaJ0NcW/6v4onqhLsc0OuYdMvTOzSLdMHnbY4jycuK1kqpx7wPDa2TLHJ9Zk4M0pokTukJnTpCC/jQoCZZxolQv+ybOyFwMIwRB7fFDoEtHcwwWmjul+ifDLt41PZtdeTrtp+a24BfWl5b+GvaJu5aC4HB/9JKQQs+sN3+ecGiPBTAQOX4p8Q8aCs2a4xf9oIH7Ou35VKHw1QJyhvHv7aF14UjUKtWpZ0s0PiC1VTb/nXyI77IwH9KOU/Rec6x4PxM4BPmG2SMJ9mJjYhh9YcV2PwMFnXHp5trWebO65qkolxzGwbEZKzVbHXxwR0B+neIGbxD3tO+ZaAzIOmjmlWS0attBDJyfD9EdoR1PaQitfU/YOeKRT6BJdd1dcIrVmBrw8ID9Qbe1OQxRpvkOKvlNcJcTA5/Aq62/PqsWlVKXqvZ1Ao1RWyGd9u8SbY=",
+      "value": "AAABhgooLaxAtP5f/DzWgK1NlzlBdJKxhIN4WLLkOMJW5Uy1i49q9WkoA3zmkzHR+RKy8sLQmTpBh34rn53mv45Lf8obAX1GExBgeKJ5UrK4hG9aP41nIj9oozSkdPkn2nf8zcFocLnD5jCI16j3ZFAmQlZBgLbhv74L2KFgDh8mTAhB6t2xD36LFUxEZYPlODBGNuxsZMRUd5C/fQ/9jU2YOsiLjUfaGPoXI08qFmBid/zvu4EFv/mzUsBaED4KOwKq5dGXkS5l2NMmj5j6WRC1vbSZnRevI3cBVJ/iakbHpYOYeUI0Wo+Bb+6jk3W12WrAyVk/6Rz0iE6OsnykCHRzNFoE6GHOyFnAug/qtcCcwSQN9kDsaHs4dAqz9RVmSaQri+JHYpxrw5NQiSBjgMMSjFnPKIA04N+70suHQax5lJbyzB2vvHunjPUyfxRMV1oV6oUU+a4RDkdkgUWF+8oLoStMmUVonEhtkietPhzoCxVdHFaMxGFrmOFHbyKFRnQ0+UqF+sHHCnM1lq1shGUUQ8o=",
       "domain": ".naver.com",
       "path": "/",
       "expires": -1,
@@ -141,21 +141,11 @@
       "sameSite": "Lax"
     },
     {
-      "name": "SPBLOCK_AIRECO_CAT_DATA",
-      "value": "%7B%22data%22%3A%7B%22categories%22%3A%5B%7B%22id%22%3A%2250000004%22%2C%22label%22%3A%22%23%EA%B0%80%EA%B5%AC%2F%EC%9D%B8%ED%85%8C%EB%A6%AC%EC%96%B4%22%2C%22catDepth%22%3A1%2C%22type%22%3A%22INTEREST%22%2C%22chartType%22%3Anull%7D%2C%7B%22id%22%3A%2250000007%22%2C%22label%22%3A%22%23%EC%8A%A4%ED%8F%AC%EC%B8%A0%2F%EB%A0%88%EC%A0%80%22%2C%22catDepth%22%3A1%2C%22type%22%3A%22INTEREST%22%2C%22chartType%22%3Anull%7D%2C%7B%22id%22%3A%2250000003%22%2C%22label%22%3A%22%23%EB%94%94%EC%A7%80%ED%84%B8%2F%EA%B0%80%EC%A0%84%22%2C%22catDepth%22%3A1%2C%22type%22%3A%22INTEREST%22%2C%22chartType%22%3Anull%7D%2C%7B%22id%22%3A%2250000006%22%2C%22label%22%3A%22%23%EC%8B%9D%ED%92%88%22%2C%22catDepth%22%3A1%2C%22type%22%3A%22INTEREST%22%2C%22chartType%22%3Anull%7D%2C%7B%22id%22%3A%2250000002%22%2C%22label%22%3A%22%23%ED%99%94%EC%9E%A5%ED%92%88%2F%EB%AF%B8%EC%9A%A9%22%2C%22catDepth%22%3A1%2C%22type%22%3A%22INTEREST%22%2C%22chartType%22%3Anull%7D%2C%7B%22id%22%3A%2250000005%22%2C%22label%22%3A%22%23%EC%B6%9C%EC%82%B0%2F%EC%9C%A1%EC%95%84%22%2C%22catDepth%22%3A1%2C%22type%22%3A%22INTEREST%22%2C%22chartType%22%3Anull%7D%2C%7B%22id%22%3A%2250000001%22%2C%22label%22%3A%22%23%ED%8C%A8%EC%85%98%EC%9E%A1%ED%99%94%22%2C%22catDepth%22%3A1%2C%22type%22%3A%22INTEREST%22%2C%22chartType%22%3Anull%7D%2C%7B%22id%22%3A%2250000008%22%2C%22label%22%3A%22%23%EC%83%9D%ED%99%9C%2F%EA%B1%B4%EA%B0%95%22%2C%22catDepth%22%3A1%2C%22type%22%3A%22INTEREST%22%2C%22chartType%22%3Anull%7D%2C%7B%22id%22%3A%2250000000%22%2C%22label%22%3A%22%23%ED%8C%A8%EC%85%98%EC%9D%98%EB%A5%98%22%2C%22catDepth%22%3A1%2C%22type%22%3A%22INTEREST%22%2C%22chartType%22%3Anull%7D%2C%7B%22id%22%3A%22best-popular%22%2C%22label%22%3A%22%EC%9D%B8%EA%B8%B0%ED%82%A4%EC%9B%8C%EB%93%9C%22%2C%22catDepth%22%3Anull%2C%22type%22%3A%22TREND%22%2C%22chartType%22%3A%22C12001%22%7D%2C%7B%22id%22%3A%22best-new%22%2C%22label%22%3A%22%EC%8B%A0%EA%B7%9C%ED%82%A4%EC%9B%8C%EB%93%9C%22%2C%22catDepth%22%3Anull%2C%22type%22%3A%22TREND%22%2C%22chartType%22%3A%22C12003%22%7D%2C%7B%22id%22%3A%22best-brand%22%2C%22label%22%3A%22%EB%B2%A0%EC%8A%A4%ED%8A%B8%EB%B8%8C%EB%9E%9C%EB%93%9C%22%2C%22catDepth%22%3Anull%2C%22type%22%3A%22TREND%22%2C%22chartType%22%3A%22C13001%22%7D%5D%2C%22hasInterestRecommendCategory%22%3Atrue%2C%22categoryRecommendationSource%22%3A%22AITEMS_CATEGORY%22%7D%2C%22timestamp%22%3A1780761620429%2C%22isLogin%22%3Atrue%7D",
-      "domain": "shopsquare.naver.com",
-      "path": "/",
-      "expires": 1780761740.430295,
-      "httpOnly": false,
-      "secure": false,
-      "sameSite": "Lax"
-    },
-    {
       "name": "BUC",
-      "value": "XuiaCsaZwoIpxWUsICybUSO1zEKmwC87fAersZ8BnoI=",
+      "value": "zigBaF5gPmyLTMsS-RLOenQ4NoWdCdI3mV3BOC4WrBs=",
       "domain": ".naver.com",
       "path": "/",
-      "expires": 1815321620.730612,
+      "expires": 1815341406.118818,
       "httpOnly": true,
       "secure": true,
       "sameSite": "None"

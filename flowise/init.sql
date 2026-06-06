@@ -6,12 +6,15 @@ CREATE DATABASE "EasyPost_USER";
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE users (
-    id        SERIAL PRIMARY KEY,
-    username  VARCHAR(50)  UNIQUE NOT NULL,
-    password  VARCHAR(255) NOT NULL,
-    email     VARCHAR(100),
-    is_active BOOLEAN   DEFAULT TRUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id            SERIAL PRIMARY KEY,
+    username      VARCHAR(50) UNIQUE NOT NULL,
+    password      VARCHAR(255) NOT NULL,
+    email         VARCHAR(100),
+    phone_number  VARCHAR(30),
+    is_active     BOOLEAN NOT NULL DEFAULT TRUE,
+    is_admin      BOOLEAN NOT NULL DEFAULT FALSE,
+    last_login_at TIMESTAMPTZ,
+    created_at    TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE posting_logs (
@@ -33,7 +36,3 @@ CREATE TABLE posting_logs (
 );
 
 CREATE INDEX posting_logs_user_created_idx ON posting_logs (user_id, created_at DESC);
-
--- 기본 사용자: freegear / gundam
-INSERT INTO users (username, password)
-VALUES ('freegear', crypt('gundam', gen_salt('bf')));

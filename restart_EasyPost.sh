@@ -10,11 +10,12 @@ echo "[Flowise] Restarting..."
 docker compose -f "$SCRIPT_DIR/flowise/docker-compose.yml" down
 docker compose -f "$SCRIPT_DIR/flowise/docker-compose.yml" up -d
 
-echo "[Login] Restarting..."
+echo "[EasyPost + Admin] Restarting..."
 docker compose -f "$SCRIPT_DIR/login/docker-compose.yml" down
 FLOWISE_URL="$FLOWISE_URL" docker compose -f "$SCRIPT_DIR/login/docker-compose.yml" up -d --build
 
 echo ""
 echo "Done."
 echo "  Login   : http://$SERVER_IP:3982"
+echo "  Admin   : http://$SERVER_IP:3978"
 echo "  Flowise : http://$SERVER_IP:3991"
