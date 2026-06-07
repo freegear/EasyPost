@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>EasyPost</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
-  <link rel="stylesheet" href="/css/style.css?v=2"/>
+  <link rel="stylesheet" href="/css/style.css?v=3"/>
 </head>
 <body>
   <div class="app">
@@ -13,34 +13,37 @@
       <div class="brand">
         <img class="brand-logo" src="/easypost-logo.svg" alt="EasyPost">
       </div>
-      <div class="user-menu-wrapper">
-        <span class="session-timer-label">로그인 유지 시간</span>
-        <span class="session-timer" id="sessionTimer">60:00</span>
-        <div class="user" id="userMenuBtn">
-          <span>개인 사용자:</span>
-          <div class="avatar"></div>
-          <b id="currentUser">...</b>
-          <span class="caret">&#8964;</span>
-        </div>
-        <div class="user-dropdown" id="userDropdown">
-          <div class="drop-header">
-            <div class="drop-avatar" id="dropAvatar">?</div>
-            <div class="drop-info">
-              <h4 id="dropName">...</h4>
-              <span class="drop-badge">일반 사용자</span>
+      <div class="topbar-actions">
+        <div class="user-menu-wrapper">
+          <span class="session-timer-label">로그인 유지 시간</span>
+          <span class="session-timer" id="sessionTimer">60:00</span>
+          <div class="user" id="userMenuBtn">
+            <span>개인 사용자:</span>
+            <div class="avatar"></div>
+            <b id="currentUser">...</b>
+            <span class="caret">&#8964;</span>
+          </div>
+          <div class="user-dropdown" id="userDropdown">
+            <div class="drop-header">
+              <div class="drop-avatar" id="dropAvatar">?</div>
+              <div class="drop-info">
+                <h4 id="dropName">...</h4>
+                <span class="drop-badge">일반 사용자</span>
+              </div>
+            </div>
+            <div class="drop-menu">
+              <div class="drop-item">
+                <span class="drop-icon">&#9881;</span>
+                <span>사용자 정보 편집</span>
+              </div>
+              <div class="drop-item drop-logout" id="logoutBtn">
+                <span class="drop-icon">&#8617;</span>
+                <span>로그아웃</span>
+              </div>
             </div>
           </div>
-          <div class="drop-menu">
-            <div class="drop-item">
-              <span class="drop-icon">&#9881;</span>
-              <span>사용자 정보 편집</span>
-            </div>
-            <div class="drop-item drop-logout" id="logoutBtn">
-              <span class="drop-icon">&#8617;</span>
-              <span>로그아웃</span>
-            </div>
-          </div>
         </div>
+        <a class="manual-page-btn" href="http://175.126.82.25:3000/docs/easypost/" target="_blank" rel="noopener noreferrer">매뉴얼 페이지</a>
       </div>
     </header>
 
