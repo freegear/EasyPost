@@ -12,8 +12,8 @@ RUN apt-get update && apt-get install -y \
     libxi6 libxkbcommon0 libxrandr2 libxrender1 libxss1 libxtst6 xdg-utils \
     --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
-COPY package.json ./
-RUN npm install --production
+COPY package*.json ./
+RUN npm ci --omit=dev
 
 # Download Playwright Chromium browser
 RUN npx playwright install chromium

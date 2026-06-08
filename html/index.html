@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>EasyPost</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml"/>
-  <link rel="stylesheet" href="/css/style.css?v=3"/>
+  <link rel="stylesheet" href="/css/style.css?v=4"/>
 </head>
 <body>
   <div class="app">
@@ -661,6 +661,30 @@
 
     loadPostingLogs();
     setInterval(loadPostingLogs, 60 * 1000);
+
+    function syncSidebarToSlotBottom() {
+      const sidebar = document.querySelector('.sidebar');
+      const slot4 = document.querySelector('.slot-card:nth-child(4)');
+      if (!sidebar || !slot4) return;
+
+      if (window.matchMedia('(max-width: 1200px)').matches) {
+        sidebar.style.height = '';
+        return;
+      }
+
+      const sidebarTop = sidebar.getBoundingClientRect().top + window.scrollY;
+      const slotBottom = slot4.getBoundingClientRect().bottom + window.scrollY;
+      const targetHeight = Math.max(360, Math.round(slotBottom - sidebarTop));
+      sidebar.style.height = `${targetHeight}px`;
+    }
+
+    syncSidebarToSlotBottom();
+    window.addEventListener('resize', syncSidebarToSlotBottom);
+    if ('ResizeObserver' in window) {
+      const layoutObserver = new ResizeObserver(syncSidebarToSlotBottom);
+      const slots = document.querySelector('.slots');
+      if (slots) layoutObserver.observe(slots);
+    }
 
     // 유저 메뉴 드롭다운 토글
     document.getElementById('userMenuBtn').addEventListener('click', e => {
@@ -1463,7 +1487,7 @@
           const originalText = this.textContent;
 
           this.disabled = true;
-          this.textContent = '게시 중...';
+          this.textContent = '등록 중...';
           this.classList.add('running');
 
           try {
@@ -1499,13 +1523,10 @@
             }
             showLatestPostingLogs();
 
-            const linkHtml = data.url
-              ? `<br><a href="${data.url}" target="_blank" rel="noopener" style="color:#4c7f62;word-break:break-all;">${data.url}</a>`
-              : '';
             const popup = document.getElementById('dialogPopup');
-            document.getElementById('dialogTitle').textContent = `슬롯 #${slotId} 게시 완료`;
+            document.getElementById('dialogTitle').textContent = `슬롯 #${slotId} 작업 등록`;
             document.getElementById('dialogMessage').innerHTML =
-              `카페에 성공적으로 게시되었습니다.${linkHtml}`;
+              `게시 작업이 큐에 등록되었습니다.<br>최근 게시 로그에서 진행 상태를 확인할 수 있습니다.`;
             document.getElementById('dialogCancel').style.display = 'none';
             document.getElementById('dialogOk').textContent = '확인';
             document.getElementById('dialogInput').style.display = 'none';

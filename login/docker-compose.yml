@@ -9,6 +9,7 @@ services:
       - DB_HOST=easypost_postgres
       - DB_USER=${DB_USER:-easypost}
       - DB_PASSWORD=${DB_PASSWORD:-easypost123}
+      - REDIS_HOST=easypost_redis
       - FLOWISE_URL=${FLOWISE_URL:-http://localhost:3991}
       - SESSION_SECRET=${SESSION_SECRET:-easypost-secret-key}
       - DATA_DIR=/app/data
@@ -17,6 +18,42 @@ services:
       - ../html:/app/html:ro
       - ../css:/app/css:ro
       - ../data:/app/data
+    networks:
+      - easypost
+
+  posting-worker:
+    build: .
+    container_name: easypost_posting_worker
+    restart: unless-stopped
+    command: ["node", "worker/posting-worker.js"]
+    environment:
+      - DB_HOST=easypost_postgres
+      - DB_USER=${DB_USER:-easypost}
+      - DB_PASSWORD=${DB_PASSWORD:-easypost123}
+      - REDIS_HOST=easypost_redis
+      - DATA_DIR=/app/data
+      - WORKER_NAME=worker-a
+      - POSTING_WORKER_CONCURRENCY=1
+    volumes:
+      - ../data:/app/data
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - easypost
+
+  redis:
+    image: redis:7-alpine
+    container_name: easypost_redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
     networks:
       - easypost
 
@@ -40,3 +77,7 @@ networks:
   easypost:
     external: true
     name: easypost
+
+volumes:
+  redis_data:
+    name: easypost_redis_data

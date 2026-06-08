@@ -14,6 +14,7 @@ LOGIN_AGENT_IMAGE="easypost/naver-login-agent:${VERSION}"
 CAFE_POSTER_IMAGE="easypost/naver-cafe-poster:${VERSION}"
 FLOWISE_IMAGE="flowiseai/flowise:latest"
 POSTGRES_IMAGE="postgres:16-alpine"
+REDIS_IMAGE="redis:7-alpine"
 
 log() {
   printf '[EasyPost] %s\n' "$*"
@@ -66,6 +67,8 @@ package_images() {
   [[ -f "${SCRIPT_DIR}/admin/server.js" ]] || die "EasyPost 관리 서비스 소스를 찾을 수 없습니다."
   [[ -f "${SCRIPT_DIR}/html/index.html" ]] || die "대시보드 HTML을 찾을 수 없습니다."
   [[ -f "${SCRIPT_DIR}/css/style.css" ]] || die "대시보드 CSS를 찾을 수 없습니다."
+  [[ -f "${SCRIPT_DIR}/login/worker/posting-worker.js" ]] || die "포스팅 워커 소스를 찾을 수 없습니다."
+  [[ -f "${SCRIPT_DIR}/login/lib/postingQueue.js" ]] || die "포스팅 큐 모듈을 찾을 수 없습니다."
 
   log "소스가 포함된 배포용 로그인 이미지를 빌드합니다."
   docker build \
@@ -82,9 +85,12 @@ RUN apt-get update && apt-get install -y \
     libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 \
     libxi6 libxkbcommon0 libxrandr2 libxrender1 libxss1 libxtst6 xdg-utils \
     --no-install-recommends && rm -rf /var/lib/apt/lists/*
-COPY login/package.json ./
-RUN npm install --omit=dev && npx playwright install chromium
+COPY login/package*.json ./
+RUN if [ -f package-lock.json ]; then npm ci --omit=dev; else npm install --omit=dev; fi \
+    && npx playwright install chromium
 COPY login/server.js ./server.js
+COPY login/lib ./lib
+COPY login/worker ./worker
 COPY login/playwright ./playwright
 COPY login/public ./public
 COPY html ./html
@@ -100,6 +106,7 @@ DOCKERFILE
   log "기반 이미지를 준비합니다."
   docker pull "${FLOWISE_IMAGE}"
   docker pull "${POSTGRES_IMAGE}"
+  docker pull "${REDIS_IMAGE}"
 
   log "이미지 묶음을 생성합니다: ${ARCHIVE_PATH}"
   docker save \
@@ -108,7 +115,8 @@ DOCKERFILE
     "${LOGIN_AGENT_IMAGE}" \
     "${CAFE_POSTER_IMAGE}" \
     "${FLOWISE_IMAGE}" \
-    "${POSTGRES_IMAGE}" | gzip -1 >"${ARCHIVE_PATH}"
+    "${POSTGRES_IMAGE}" \
+    "${REDIS_IMAGE}" | gzip -1 >"${ARCHIVE_PATH}"
 
   chmod 600 "${ARCHIVE_PATH}"
   log "패키징 완료"
@@ -135,6 +143,20 @@ services:
       test: ["CMD-SHELL", "pg_isready -U \${DB_USER}"]
       interval: 5s
       timeout: 5s
+      retries: 20
+    networks: [easypost]
+
+  redis:
+    image: ${REDIS_IMAGE}
+    container_name: easypost_redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
       retries: 20
     networks: [easypost]
 
@@ -208,11 +230,36 @@ services:
       DB_HOST: postgres
       DB_USER: \${DB_USER}
       DB_PASSWORD: \${DB_PASSWORD}
+      REDIS_HOST: redis
       FLOWISE_URL: \${FLOWISE_URL}
       SESSION_SECRET: \${SESSION_SECRET}
       DATA_DIR: /app/data
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - easypost_data:/app/data
+    networks: [easypost]
+
+  posting-worker:
+    image: ${LOGIN_IMAGE}
+    container_name: easypost_posting_worker
+    restart: unless-stopped
+    command: ["node", "worker/posting-worker.js"]
+    environment:
+      DB_HOST: postgres
+      DB_USER: \${DB_USER}
+      DB_PASSWORD: \${DB_PASSWORD}
+      REDIS_HOST: redis
+      DATA_DIR: /app/data
+      WORKER_NAME: \${POSTING_WORKER_NAME}
+      POSTING_WORKER_CONCURRENCY: \${POSTING_WORKER_CONCURRENCY}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     volumes:
       - easypost_data:/app/data
@@ -242,6 +289,8 @@ networks:
 volumes:
   postgres_data:
     name: easypost_postgres_data
+  redis_data:
+    name: easypost_redis_data
   flowise_data:
     name: flowise_data
   naver_sessions:
@@ -268,6 +317,8 @@ FLOWISE_PORT=${FLOWISE_PORT:-3991}
 FLOWISE_URL=http://${server_ip}:${FLOWISE_PORT:-3991}
 FLOWISE_USERNAME=${FLOWISE_USERNAME:-admin}
 FLOWISE_PASSWORD=${flowise_password}
+POSTING_WORKER_NAME=${POSTING_WORKER_NAME:-worker-a}
+POSTING_WORKER_CONCURRENCY=${POSTING_WORKER_CONCURRENCY:-1}
 EOF
   chmod 600 "${INSTALL_DIR}/.env"
 }
@@ -311,10 +362,30 @@ CREATE TABLE IF NOT EXISTS users (
 ALTER TABLE users
 ADD COLUMN IF NOT EXISTS email VARCHAR(100),
 ADD COLUMN IF NOT EXISTS phone_number VARCHAR(30),
-ADD COLUMN IF NOT EXISTS is_admin BOOLEAN NOT NULL DEFAULT FALSE;
+ADD COLUMN IF NOT EXISTS is_admin BOOLEAN NOT NULL DEFAULT FALSE,
+ADD COLUMN IF NOT EXISTS last_login_at TIMESTAMPTZ;
 INSERT INTO users (username, password, is_admin)
 VALUES (:'admin_username', crypt(:'admin_password', gen_salt('bf')), TRUE)
 ON CONFLICT (username) DO UPDATE SET is_admin = TRUE;
+CREATE TABLE IF NOT EXISTS posting_logs (
+  id BIGSERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  username VARCHAR(50) NOT NULL,
+  slot_id INTEGER NOT NULL,
+  slot_name VARCHAR(255) NOT NULL,
+  post_id INTEGER,
+  schedule_type VARCHAR(20),
+  scheduled_for TIMESTAMPTZ NOT NULL,
+  status VARCHAR(20) NOT NULL,
+  reason TEXT,
+  posted_url TEXT,
+  detail JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (user_id, slot_id, scheduled_for)
+);
+CREATE INDEX IF NOT EXISTS posting_logs_user_created_idx
+ON posting_logs (user_id, created_at DESC);
 SQL
 }
 
@@ -348,8 +419,8 @@ install_images() {
   write_compose_file
   write_env_file "${server_ip}" "${db_password}" "${session_secret}" "${flowise_password}"
 
-  log "PostgreSQL을 시작합니다."
-  docker compose --env-file "${INSTALL_DIR}/.env" -f "${INSTALL_DIR}/compose.yml" up -d postgres
+  log "PostgreSQL과 Redis를 시작합니다."
+  docker compose --env-file "${INSTALL_DIR}/.env" -f "${INSTALL_DIR}/compose.yml" up -d postgres redis
   wait_for_postgres
   initialize_database "${admin_username}" "${admin_password}"
 
@@ -360,6 +431,8 @@ install_images() {
   log "  EasyPost: http://${server_ip}:${EASYPOST_PORT:-3982}"
   log "  Admin   : http://${server_ip}:${EASYPOST_ADMIN_PORT:-3978}"
   log "  Flowise : http://${server_ip}:${FLOWISE_PORT:-3991}"
+  log "  Worker  : easypost_posting_worker"
+  log "  Redis   : easypost_redis"
   log "  관리자 ID: ${admin_username}"
   log "  설치 경로: ${INSTALL_DIR}"
   log "  상태 확인: docker compose --env-file ${INSTALL_DIR}/.env -f ${INSTALL_DIR}/compose.yml ps"

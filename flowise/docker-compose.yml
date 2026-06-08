@@ -1,6 +1,6 @@
 services:
   flowise:
-    image: flowiseai/flowise:latest-chromium
+    image: flowiseai/flowise:latest
     container_name: flowise
     restart: unless-stopped
     ports:
